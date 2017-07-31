@@ -69,6 +69,7 @@
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "moment": "^2.18.1",
+    "normalize.css": "^7.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "tween.js": "^16.6.0",
