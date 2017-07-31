@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FocusEvent, KeyboardEvent } from 'react'
+import React, { ChangeEvent, KeyboardEvent } from 'react'
 import { queryLogger } from 'app/stores'
 import LoggedInputHintBox from './LoggedInputHintBox'
 
@@ -14,77 +14,45 @@ export interface AppState {
 }
 
 class LoggedInput extends React.Component<AppProps, AppState> {
-  hintBox: HTMLUListElement
   input: HTMLInputElement
   state = {
     query: 'gutchom',
     stampOnFocus: '',
     stampToLatest: '',
-    visibleHints: false
+    visibleHints: false,
   }
 
   constructor() {
     super()
     queryLogger.append('gutchom')
-    queryLogger.append('hoge')
-    queryLogger.append('fuga')
-    queryLogger.append('nyas')
-    queryLogger.append('test')
-    queryLogger.append('nyan')
-    queryLogger.append('foo')
-    queryLogger.append('bar')
+  }
+
+  componentDidMount() {
+    document.body.addEventListener('click', () => {
+      this.setState({ visibleHints: false })
+    }, false)
+
+    this.input.addEventListener('click', (e) => {
+      e.stopPropagation()
+    }, true)
   }
 
   handleUndo = () => {
     queryLogger.undo(1)
+
     this.setState({
       query: queryLogger.current as string,
-      visibleHints: true
+      visibleHints: true,
     })
   }
 
   handleRedo = () => {
     queryLogger.redo(1)
+
     this.setState({
       query: queryLogger.current as string,
-      visibleHints: true
+      visibleHints: true,
     })
-  }
-
-  handleInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    console.log(e.key)
-
-    if (e.key.length === 1) return
-
-    switch (e.key) {
-      case 'Escape':
-        queryLogger.jump(this.state.stampOnFocus)
-        this.setState({
-          query: queryLogger.current as string,
-          visibleHints: false
-        })
-        ; (e.target as HTMLInputElement).blur()
-        break
-
-      case 'Enter':
-        queryLogger.append((e.target as HTMLInputElement).value)
-        this.setState({
-          query: '',
-          visibleHints: false
-        })
-        break
-
-      case 'ArrowUp':
-        this.handleRedo()
-        break
-
-      case 'ArrowDown':
-        this.handleUndo()
-        break
-
-      default:
-        break
-    }
   }
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -101,19 +69,56 @@ class LoggedInput extends React.Component<AppProps, AppState> {
     })
   }
 
-  handleInputBlur = (e: FocusEvent<HTMLInputElement>) => {
-    if (queryLogger.current !== (e.target as HTMLInputElement).value) {
-      queryLogger.append((e.target as HTMLInputElement).value)
+  handleInputBlur = () => {
+    if (this.input.value.length === 0 || /^\s+$/.test(this.input.value)) return
+
+    if (queryLogger.current !== this.input.value) queryLogger.append(this.input.value)
+  }
+
+  handleInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    console.log(e.key)
+
+    if (e.key.length === 1) return
+
+    switch (e.key) {
+      case 'Escape':
+        queryLogger.jump(this.state.stampOnFocus)
+
+        this.setState({
+          query: queryLogger.current as string,
+          visibleHints: false,
+        })
+
+        this.input.blur()
+
+        break
+
+      case 'Enter':
+        if (this.input.value.length === 0 || /^\s+$/.test(this.input.value)) break
+
+        queryLogger.append(this.input.value)
+
+        this.setState({ query: '' })
+
+        break
+
+      case 'ArrowUp':
+        this.handleRedo()
+
+        break
+
+      case 'ArrowDown':
+        this.handleUndo()
+
+        break
+
+      default:
+        break
     }
   }
 
-  handleSelect = (chosen: HTMLInputElement) => {
-    console.log(this.hintBox)
-    console.log('hintBox.scrollHeight', this.hintBox.scrollHeight)
-    console.log('hintBox.scrollTop', this.hintBox.scrollTop)
-    console.log('chosen.offsetTop', chosen.offsetTop)
-
-    queryLogger.cursor = parseInt(chosen.value, 10)
+  handleSelect = (cursor: number, offset: number) => {
+    queryLogger.cursor = cursor
     queryLogger.append(queryLogger.current)
 
     this.setState({
@@ -131,13 +136,13 @@ class LoggedInput extends React.Component<AppProps, AppState> {
                  onKeyUp={this.handleInputKeyUp}
                  onFocus={this.handleInputFocus}
                  onBlur={this.handleInputBlur}
-                 onChange={this.handleInputChange} />
-          <LoggedInputHintBox name={this.props.name}
+                 onChange={this.handleInputChange}
+                 ref={(input: HTMLInputElement) => this.input = input} />
+          <LoggedInputHintBox visible={this.state.visibleHints}
+                              name={this.props.name}
                               hints={queryLogger.all.reverse()}
                               selecting={queryLogger.cursor}
-                              visible={this.state.visibleHints}
-                              handleSelect={this.handleSelect}
-                              hintBoxRef={(el: HTMLUListElement) => this.hintBox = el} />
+                              handleSelect={this.handleSelect} />
         </div>
         <button onClick={this.handleUndo}>Undo</button>
         <button onClick={this.handleRedo}>Redo</button>

@@ -5,14 +5,14 @@ export interface LoggedInputHintProps {
   hint: string
   position: number
   selecting: number
-  handleSelect: (chosen: HTMLInputElement) => void
+  handleSelect: (cursor: number, offset: number) => void
 }
 
 const LoggedInputHint: React.SFC<LoggedInputHintProps> = props => {
   let radioInput: HTMLInputElement
 
   const handleRadioClick = () => {
-    props.handleSelect(radioInput)
+    props.handleSelect(props.position, radioInput.offsetTop)
   }
 
   return (
@@ -23,7 +23,8 @@ const LoggedInputHint: React.SFC<LoggedInputHintProps> = props => {
              name={props.name}
              value={props.position}
              checked={(props.position === props.selecting)}
-             onChange={handleRadioClick}
+             onChange={function() { return }}
+             onClick={handleRadioClick}
              ref={(radio: HTMLInputElement) => radioInput = radio} />
       <label htmlFor={`radio-${props.name}-${props.position}`}>
         <span>{props.hint}</span>

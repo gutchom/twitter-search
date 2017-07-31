@@ -4,15 +4,14 @@ import LoggedInputHint from './LoggedInputHint'
 export interface LoggedInputHintBoxProps {
   visible: boolean
   name: string
-  hints: Array<string>
+  hints: string[]
   selecting: number
-  handleSelect: (chosen: HTMLInputElement) => void
-  hintBoxRef: (hintBox: HTMLUListElement) => void
+  handleSelect: (cursor: number, offset: number) => void
 }
 
 const LoggedInputHintBox: SFC<LoggedInputHintBoxProps> = props => {
   return (
-    <ul className={`hint-box ${props.visible ? 'visible' : ''}`} ref={props.hintBoxRef}>
+    <ul className={`hint-box ${props.visible ? 'visible' : ''}`}>
       {props.hints.map((hint, index) => (
         <LoggedInputHint key={index}
                          name={props.name}
