@@ -10,7 +10,7 @@ export interface AppState {
   query: string
   stampOnFocus: string
   stampToLatest: string
-  visibleHints: boolean
+  historyVisibility: boolean
 }
 
 class LoggedInput extends React.Component<AppProps, AppState> {
@@ -19,7 +19,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
     query: 'gutchom',
     stampOnFocus: '',
     stampToLatest: '',
-    visibleHints: false,
+    historyVisibility: false,
   }
 
   constructor() {
@@ -29,7 +29,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     document.body.addEventListener('click', () => {
-      this.setState({ visibleHints: false })
+      this.setState({ historyVisibility: false })
     }, false)
 
     this.input.addEventListener('click', (e) => {
@@ -42,7 +42,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
 
     this.setState({
       query: queryLogger.current as string,
-      visibleHints: true,
+      historyVisibility: true,
     })
   }
 
@@ -51,7 +51,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
 
     this.setState({
       query: queryLogger.current as string,
-      visibleHints: true,
+      historyVisibility: true,
     })
   }
 
@@ -65,7 +65,6 @@ class LoggedInput extends React.Component<AppProps, AppState> {
     this.setState({
       query: queryLogger.current as string,
       stampOnFocus: queryLogger.stamp,
-      visibleHints: true,
     })
   }
 
@@ -86,7 +85,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
 
         this.setState({
           query: queryLogger.current as string,
-          visibleHints: false,
+          historyVisibility: false,
         })
 
         this.input.blur()
@@ -123,7 +122,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
 
     this.setState({
       query: queryLogger.current as string,
-      visibleHints: false,
+      historyVisibility: false,
     })
   }
 
@@ -138,7 +137,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
                  onBlur={this.handleInputBlur}
                  onChange={this.handleInputChange}
                  ref={(input: HTMLInputElement) => this.input = input} />
-          <LoggedInputHintBox visible={this.state.visibleHints}
+          <LoggedInputHintBox visible={this.state.historyVisibility}
                               name={this.props.name}
                               hints={queryLogger.all.reverse()}
                               selecting={queryLogger.cursor}
