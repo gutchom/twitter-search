@@ -116,7 +116,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
     }
   }
 
-  handleSelect = (cursor: number, offset: number) => {
+  handleSelect = (cursor: number) => {
     queryLogger.cursor = cursor
     queryLogger.append(queryLogger.current)
 
@@ -124,6 +124,12 @@ class LoggedInput extends React.Component<AppProps, AppState> {
       query: queryLogger.current as string,
       historyVisibility: false,
     })
+  }
+
+  handleScroll = (offset: number, hintBox: HTMLUListElement) => {
+    console.log(offset)
+    console.log(hintBox.scrollHeight)
+    console.log(hintBox.scrollTop)
   }
 
   render() {
@@ -141,7 +147,8 @@ class LoggedInput extends React.Component<AppProps, AppState> {
                               name={this.props.name}
                               hints={queryLogger.all.reverse()}
                               selecting={queryLogger.cursor}
-                              handleSelect={this.handleSelect} />
+                              handleSelect={this.handleSelect}
+                              handleScroll={this.handleScroll} />
         </div>
         <button onClick={this.handleUndo}>Undo</button>
         <button onClick={this.handleRedo}>Redo</button>
