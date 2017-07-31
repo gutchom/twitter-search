@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react'
+import React, { ChangeEvent, KeyboardEvent, MouseEvent } from 'react'
 import { queryLogger } from 'app/stores'
 import LoggedInputHintBox from './LoggedInputHintBox'
 
@@ -34,7 +34,7 @@ class LoggedInput extends React.Component<AppProps, AppState> {
 
     this.input.addEventListener('click', (e) => {
       e.stopPropagation()
-    }, true)
+    }, false)
   }
 
   handleUndo = () => {
@@ -102,6 +102,12 @@ class LoggedInput extends React.Component<AppProps, AppState> {
         break
 
       case 'ArrowUp':
+        if (queryLogger.cursor === 1) {
+          this.setState({ historyVisibility: false })
+
+          break
+        }
+
         this.handleRedo()
 
         break
@@ -114,6 +120,12 @@ class LoggedInput extends React.Component<AppProps, AppState> {
       default:
         break
     }
+  }
+
+  handleHistoryClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+
+    this.setState({ historyVisibility: true })
   }
 
   handleSelect = (cursor: number) => {
