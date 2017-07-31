@@ -4,7 +4,7 @@
   --color-select: #65b3c1;
   --color-hover: #648dbd;
   --color-gray: #ddd;
-  --radius: 8px;
+  --radius: 12px;
   --transition-duration: 0.3s;
   --query-input-width: 288px;
 }
@@ -14,9 +14,13 @@ body {
   height: 100%;
 }
 
-ul {
-  margin: 0;
+button{
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
   padding: 0;
+  appearance: none;
 }
 
 .query-input {
@@ -25,6 +29,23 @@ ul {
   & .text-input {
     display: inline-block;
     position: relative;
+
+    & .icon {
+      font-size: 24px;
+      position: absolute;
+      top: 8px;
+      transition: var(--transition-duration);
+    }
+
+    & .icon-search {
+      right: 12px;
+      opacity: 0;
+    }
+
+    & .icon-clock {
+      left: 12px;
+      opacity: 0;
+    }
 
     & > input {
       border: 3px solid var(--color-gray);
@@ -41,19 +62,23 @@ ul {
         border-color: var(--color-select);
         box-shadow: 0 0 3px 3px color(var(--color-select) alpha(70%));
         color: var(--color-select);
+        padding: 8px 36px;
         width: calc(var(--query-input-width) * 1.25);
 
-        & + .hint-box {
+        & ~ .hint-box {
           border-color: var(--color-select);
           min-width: calc(var(--query-input-width) * 0.48);
           max-width: calc(var(--query-input-width) * 0.92);
+        }
+
+        & ~ .icon {
+          opacity: 1;
         }
       }
     }
 
     & .hint-box {
-      border: 1px solid var(--color-gray);
-      border-radius: 0 0 var(--radius) var(--radius);
+      border-radius: 0 0 calc(var(--radius) * 0.5) calc(var(--radius) * 0.5);
       margin: 0 auto;
       max-height: 0;
       overflow-y: scroll;
@@ -66,6 +91,7 @@ ul {
       transition: var(--transition-duration);
 
       &.visible {
+        border: 1px solid var(--color-gray);
         max-height: 180px;
       }
 
