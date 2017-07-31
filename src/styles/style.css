@@ -1,0 +1,109 @@
+:root {
+  --color-select: #65b3c1;
+  --color-hover: #648dbd;
+  --color-gray: #ddd;
+  --radius: 8px;
+  --transition-duration: 0.3s;
+  --query-input-width: 288px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.query-input {
+  margin: 12px auto 12px 36px;
+
+  & .text-input {
+    display: inline-block;
+    position: relative;
+
+    & > input {
+      border: 3px solid var(--color-gray);
+      border-radius: var(--radius);
+      font-size: 1.2em;
+      margin: auto;
+      outline: none;
+      padding: 8px 0;
+      text-align: center;
+      transition: var(--transition-duration) width;
+      width: calc(var(--query-input-width) * 0.5);
+
+      &:focus {
+        border-color: var(--color-select);
+        box-shadow: 0 0 3px 3px color(var(--color-select) alpha(70%));
+        color: var(--color-select);
+        width: calc(var(--query-input-width) * 1.25);
+
+        & + .hint-box {
+          border-color: var(--color-select);
+          min-width: calc(var(--query-input-width) * 0.48);
+          max-width: calc(var(--query-input-width) * 0.92);
+        }
+      }
+    }
+
+    & .hint-box {
+      border: 1px solid var(--color-gray);
+      border-radius: 0 0 var(--radius) var(--radius);
+      margin: 0 auto;
+      max-height: 0;
+      overflow-y: scroll;
+      min-width: calc(var(--query-input-width) * 0.24);
+      max-width: calc(var(--query-input-width) * 0.46);
+      padding: 0;
+      position: absolute;
+      right: -50%;
+      left: -50%;
+      transition: var(--transition-duration);
+
+      &.visible {
+        max-height: 180px;
+      }
+
+      & .hint {
+        display: block;
+        height: 100%;
+        text-align: center;
+        width: 100%;
+
+        & .radio-input {
+          display: none;
+
+          &:checked + label {
+            color: #fff;
+            background: var(--color-select);
+
+            &:hover {
+              background: var(--color-hover);
+            }
+          }
+        }
+
+        & span {
+          font-size: 1em;
+        }
+
+        & label {
+          border-top: 1px solid var(--color-gray);
+          display: block;
+          height: 100%;
+          padding: 6px 0;
+          transition: calc(var(--transition-duration) * 0.5);
+          width: 100%;
+
+          &:hover {
+            color: #fff;
+            background: var(--color-hover);
+          }
+        }
+      }
+    }
+  }
+}
