@@ -155,6 +155,12 @@ class LoggedInput extends React.Component<AppProps, AppState> {
                  onBlur={this.handleInputBlur}
                  onChange={this.handleInputChange}
                  ref={(input: HTMLInputElement) => this.input = input} />
+          <button className="icon icon-clock" onClick={this.handleHistoryClick}>
+            <i className="fa fa-clock-o" aria-hidden="true" />
+          </button>
+          <button className="icon icon-search">
+            <i className="fa fa-search" aria-hidden="true" />
+          </button>
           <LoggedInputHintBox visible={this.state.historyVisibility}
                               name={this.props.name}
                               hints={queryLogger.all.reverse()}
@@ -162,8 +168,6 @@ class LoggedInput extends React.Component<AppProps, AppState> {
                               handleSelect={this.handleSelect}
                               handleScroll={this.handleScroll} />
         </div>
-        <button onClick={this.handleUndo}>Undo</button>
-        <button onClick={this.handleRedo}>Redo</button>
       </div>
     )
   }
