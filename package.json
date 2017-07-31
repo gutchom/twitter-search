@@ -67,6 +67,7 @@
   "dependencies": {
     "array-nth": "^1.0.1",
     "babel-polyfill": "^6.23.0",
+    "classnames": "^2.2.5",
     "moment": "^2.18.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -74,6 +75,7 @@
     "url-search-params": "^0.10.0"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.0",
     "@types/enzyme": "^2.8.4",
     "@types/mocha": "^2.2.41",
     "@types/node": "^8.0.17",
