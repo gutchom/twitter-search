@@ -1,4 +1,4 @@
-import React, { SFC } from 'react'
+import React from 'react'
 import LoggedInputHint from './LoggedInputHint'
 
 export interface LoggedInputHintBoxProps {
@@ -10,7 +10,7 @@ export interface LoggedInputHintBoxProps {
   handleScroll: (offset: number, hintBox: HTMLUListElement) => void
 }
 
-const LoggedInputHintBox: SFC<LoggedInputHintBoxProps> = props => {
+const LoggedInputHintBox: React.SFC<LoggedInputHintBoxProps> = props => {
   let ul: HTMLUListElement
 
   const handleScroll = (offset: number) => {
@@ -19,7 +19,7 @@ const LoggedInputHintBox: SFC<LoggedInputHintBoxProps> = props => {
 
   return (
     <ul className={`hint-box ${props.visible ? 'visible' : ''}`}
-    ref={(el: HTMLUListElement) => ul = el}>
+        ref={(el: HTMLUListElement) => ul = el}>
       {props.hints.map((hint, index) => (
         <LoggedInputHint key={index}
                          name={props.name}

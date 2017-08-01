@@ -82,39 +82,30 @@ class LoggedInput extends React.Component<AppProps, AppState> {
     switch (e.key) {
       case 'Escape':
         queryLogger.jump(this.state.stampOnFocus)
-
         this.setState({
           query: queryLogger.current as string,
           historyVisibility: false,
         })
-
         this.input.blur()
-
         break
 
       case 'Enter':
         if (this.input.value.length === 0 || /^\s+$/.test(this.input.value)) break
-
         queryLogger.append(this.input.value)
-
         this.setState({ query: '' })
-
         break
 
       case 'ArrowUp':
         if (queryLogger.cursor === 1) {
           this.setState({ historyVisibility: false })
-
           break
         }
 
         this.handleRedo()
-
         break
 
       case 'ArrowDown':
         this.handleUndo()
-
         break
 
       default:
