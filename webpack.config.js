@@ -6,7 +6,7 @@ const baseDir = resolve(__dirname, 'src/scripts/')
 
 module.exports = {
   entry: {
-    app: ['babel-polyfill', baseDir + '/app/index.tsx',]
+    app: ['babel-polyfill', baseDir + '/app/index.tsx']
   },
   output: {
     filename: '[name].js',

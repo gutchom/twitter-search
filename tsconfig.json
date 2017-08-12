@@ -3,7 +3,7 @@
     "target": "es2015",
     "module": "es2015",
     "moduleResolution": "node",
-    "jsx": "preserve",
+    "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "noImplicitAny": true,

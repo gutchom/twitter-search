@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "array-nth": "^1.0.1",
+    "array-unique": "^0.3.2",
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "moment": "^2.18.1",
