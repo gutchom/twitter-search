@@ -28,6 +28,8 @@ module.exports = function(config) {
       'karma-es6-shim',
     ],
     preprocessors: {
+      'app/**/*.ts': ['webpack', 'sourcemap'],
+      'app/**/*.tsx': ['webpack', 'sourcemap'],
       'test/**/*.test.ts': ['webpack', 'sourcemap'],
       'test/**/*.test.tsx': ['webpack', 'sourcemap'],
     },

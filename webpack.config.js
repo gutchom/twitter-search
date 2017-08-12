@@ -30,9 +30,9 @@ module.exports = {
   devtool: isProduction ? false : 'inline-source-map',
   resolve: {
     modules: [
-      baseDir + '/app',
+      'node_modules',
       baseDir,
-      'node_modules'
+      baseDir + '/app',
     ],
     extensions: ['.ts', '.tsx', '.js', 'jsx', 'json'],
     alias: {
