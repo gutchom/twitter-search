@@ -2,38 +2,16 @@
   "name": "observe-2ch-client",
   "version": "0.0.1",
   "description": "UI for Observe 2ch Web",
+  "author": "gutchom",
   "license": "MIT",
+  "homepage": "https://observe-2ch.gutchom.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/gutchom/observe-2ch-client"
   },
+  "bugs": {
+    "url": "https://github.com/gutchom/assets-manifest/issues"
   },
-  "browserslist": [
-    "> 2%",
-    "last 2 versions"
-  ],
-  "stylelint": {
-    "extends": "stylelint-config-standard"
-  },
-  "babel": {
-    "presets": [
-      "env",
-      "react",
-      "stage-2"
-    ],
-    "plugins": [
-      "transform-decorators-legacy",
-      "transform-class-properties",
-      "syntax-object-rest-spread"
-    ],
-    "env": {
-      "test": {
-        "presets": [
-          "airbnb",
-          "power-assert"
-        ]
-      }
-    }
   "engines": {
     "node": "^8.4.0",
     "npm": "^5.4.0"
@@ -127,5 +105,42 @@
     "typescript": "2.5.2",
     "uglify-js": "^3.0.28",
     "webpack": "^3.5.6"
+  },
+  "browserslist": [
+    "> 5%",
+    "last 2 versions"
+  ],
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "plugins": [
+      "stylelint-order"
+    ],
+    "rules": {
+      "order/properties-alphabetical-order": true,
+      "order/order": [
+        "custom-properties",
+        "declarations"
+      ]
+    }
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "react",
+      "stage-2"
+    ],
+    "plugins": [
+      "transform-decorators-legacy",
+      "transform-class-properties",
+      "syntax-object-rest-spread"
+    ],
+    "env": {
+      "test": {
+        "presets": [
+          "airbnb",
+          "power-assert"
+        ]
+      }
+    }
   }
 }

@@ -10,10 +10,10 @@ module.exports = function(config) {
       'test/**/*.test.tsx',
     ],
     plugins: [
-      'karma-power-assert',
+      'karma-coverage',
       'karma-mocha',
       'karma-mocha-reporter',
-      'karma-coverage',
+      'karma-power-assert',
       'karma-chrome-launcher',
       'karma-sourcemap-writer',
       'karma-sourcemap-loader',

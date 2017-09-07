@@ -1,18 +1,52 @@
 {
+  "defaultSeverity": "error",
+  "rulesDirectory": [],
   "rules": {
     "class-name": true,
+    "comment-format": [true, "check-space"],
+    "curly": true,
+    "indent": [true, "spaces"],
+    "max-line-length": [true, 120],
+    "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-internal-module": true,
     "no-trailing-whitespace": true,
     "no-unsafe-finally": true,
+    "no-unused-variable": [true],
     "no-var-keyword": true,
+    "object-literal-shorthand": true,
     "one-line": [
       true,
+      "check-catch",
+      "check-finally",
+      "check-else",
       "check-open-brace",
       "check-whitespace"
     ],
-    "quotemark": [true, "single", "jsx-double"],
+    "prefer-const": true,
+    "prefer-object-spread": true,
+    "quotemark": [
+      true,
+      "single",
+      "jsx-double"
+    ],
+    "restrict-plus-operands": [true],
+    "semicolon": [true, "never"],
+    "space-within-parens": 1,
+    "triple-equals": true,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "objects": "always",
+          "arrays": "always",
+          "functions": "never",
+          "typeLiterals": "ignore"
+        },
+        "singleline": "never"
+      }
+    ],
     "typedef-whitespace": [
       true,
       {
@@ -23,7 +57,10 @@
         "variable-declaration": "nospace"
       }
     ],
-    "variable-name": [true, "ban-keywords"],
+    "variable-name": [
+      true,
+      "ban-keywords"
+    ],
     "whitespace": [
       true,
       "check-branch",
@@ -32,59 +69,5 @@
       "check-separator",
       "check-type"
     ]
-  },
-  "jsRules": {
-    "semicolon": [
-      true,
-      "never"
-    ],
-    "comment-format": [
-      true,
-      "check-space"
-    ],
-    "indent": [
-      true,
-      "spaces"
-    ],
-    "space-before-blocks": [
-      true,
-      "always"
-    ],
-    "keyword-spacing": [
-      true,
-      { "before": true, "after": true }
-    ],
-    "arrow-spacing": [
-      true,
-      { "before": true, "after": true }
-    ],
-    "brace-style": [
-      true,
-      "1tbs",
-      { "allowSingleLine": true }
-    ],
-    "operator-linebreak": [
-      true,
-      "before"
-    ],
-    "object-curly-spacing": [
-      true,
-      "always"
-    ],
-    "one-var": [
-      true,
-      "always"
-    ],
-    "object-shorthand": [
-      true,
-      "always"
-    ],
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
-    "no-useless-constructor": true,
-    "no-dupe-class-members": true,
-    "prefer-spread": true
   }
 }
