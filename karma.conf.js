@@ -1,10 +1,4 @@
-const webpackConf = require('./webpack.config.js')
-delete webpackConf.entry
-webpackConf.externals = {
-  'react/addons': 'react',
-  'react/lib/ExecutionEnvironment': 'react',
-  'react/lib/ReactContext': 'react',
-}
+const merge = require('./webpack.config')
 
 module.exports = function(config) {
   config.set({
@@ -48,7 +42,13 @@ module.exports = function(config) {
       { type: 'console'},
     ],
     logLevel: config.LOG_INFO,
-    webpack: webpackConf,
+    webpack: merge({
+      externals: {
+        'react/addons': 'react',
+        'react/lib/ExecutionEnvironment': 'react',
+        'react/lib/ReactContext': 'react',
+      },
+    }),
     webpackMiddleware: {
       stats: 'errors-only',
     },

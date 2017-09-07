@@ -1,50 +1,41 @@
-const webpack = require('webpack')
 const { resolve } = require('path')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-const isProduction = (process.env.NODE_ENV === 'production')
-const baseDir = resolve(__dirname, 'src/scripts/')
+const webpack = require('webpack')
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+const isDevelopment = (process.env.NODE_ENV === 'development')
+const isTesting = (process.env.NODE_ENV === 'test')
 
-module.exports = {
-  entry: {
-    app: ['babel-polyfill', baseDir + '/app/index.tsx']
-  },
-  output: {
-    filename: '[name].js',
-    path: resolve(__dirname, 'public/js'),
-  },
+const combine = base => addition => {
+  return Object.keys(addition)
+    .reduce((merged, key) => Object.assign({}, merged, {
+      [key]: merged[key] === undefined
+        ? addition[key]
+        : merged[key] instanceof Array
+          ? merged[key].concat(addition[key])
+          : typeof addition[key] === 'object'
+            ? Object.assign({}, merged[key], addition[key])
+            : addition[key]
+    }), base)
+}
+
+const base = {
+  context: resolve(__dirname, 'src/scripts'),
   plugins: [
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.DefinePlugin({
-      'process.env': { NODE_ENV: JSON.stringify(process.env.NODE_ENV) }
-    }),
-    new UglifyJSPlugin({
-      compress: isProduction,
-      mangle: false,
-      beautify: !isProduction,
-      sourceMap: !isProduction,
-    }),
+    new CaseSensitivePathsPlugin(),
   ],
-  node: {
-    fs: 'empty',
-  },
-  devtool: isProduction ? false : 'inline-source-map',
   resolve: {
-    modules: [
-      'node_modules',
-      baseDir,
-      baseDir + '/app',
-    ],
+    modules: ['node_modules'],
     extensions: ['.ts', '.tsx', '.js', 'jsx', 'json'],
     alias: {
-      app: baseDir + '/app',
+      app: resolve(__dirname, 'src/scripts/app'),
     },
   },
   module: {
-    exprContextCritical: false,
     rules: [
       {
         test: /\.tsx?$/,
-        exclude: [resolve(__dirname, 'node_modules')],
+        exclude: ['node_modules'],
         use: [
           { loader: 'babel-loader' },
           { loader: 'ts-loader' },
@@ -52,8 +43,46 @@ module.exports = {
       },
       {
         test: /\.json$/,
-        loader: 'json-loader'
+        loader: 'json-loader',
       },
     ],
   },
 }
+
+const common = combine(base)({
+  entry: {
+    app: resolve(__dirname, 'src/scripts/app/index.tsx')
+  },
+  output: {
+    filename: '[name].js',
+    path: resolve(__dirname, 'public/js'),
+  },
+})
+
+const development = combine(common)({
+  output: {
+    pathinfo: true,
+  },
+  stats: {
+    errorDetails: true,
+    colors: true,
+  },
+  devtool: 'cheap-module-eval-source-map',
+  watch: true,
+})
+
+const production = combine(common)({
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({
+      mangle: false,
+      compress: true,
+      parallel: true,
+      output: {
+        comments: false,
+        beautify: false,
+      },
+    }),
+  ],
+})
+
+module.exports = isTesting ? combine(base) : isDevelopment ? development : production
