@@ -3,8 +3,8 @@ const merge = require('./webpack.config')
 module.exports = function(config) {
   config.set({
     basePath: './src/scripts',
-    frameworks: ['power-assert', 'mocha', 'es6-shim'],
-    browsers: ['PhantomJS'],
+    frameworks: ['power-assert', 'mocha'],
+    browsers: ['ChromeHeadless'],
     files: [
       'test/**/*.test.ts',
       'test/**/*.test.tsx',
@@ -15,11 +15,9 @@ module.exports = function(config) {
       'karma-mocha-reporter',
       'karma-coverage',
       'karma-chrome-launcher',
-      'karma-phantomjs-launcher',
       'karma-sourcemap-writer',
       'karma-sourcemap-loader',
       'karma-webpack',
-      'karma-es6-shim',
     ],
     preprocessors: {
       'app/**/*.ts': ['webpack', 'sourcemap'],
