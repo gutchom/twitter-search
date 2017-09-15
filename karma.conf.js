@@ -1,4 +1,4 @@
-const merge = require('./webpack.common')
+const webpackConfig = require('./webpack.config')
 
 module.exports = config => {
   config.set({
@@ -40,13 +40,7 @@ module.exports = config => {
       { type: 'console'},
     ],
     logLevel: config.LOG_INFO,
-    webpack: merge({
-      externals: {
-        'react/addons': 'react',
-        'react/lib/ExecutionEnvironment': 'react',
-        'react/lib/ReactContext': 'react',
-      },
-    }),
+    webpack: webpackConfig,
     webpackMiddleware: {
       stats: 'errors-only',
     },

@@ -55,18 +55,6 @@ const common = combine(base)({
   },
 })
 
-const development = combine(common)({
-  output: {
-    pathinfo: true,
-  },
-  stats: {
-    errorDetails: true,
-    colors: true,
-  },
-  devtool: 'cheap-module-eval-source-map',
-  watch: true,
-})
-
 const production = combine(common)({
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
@@ -81,4 +69,24 @@ const production = combine(common)({
   ],
 })
 
-module.exports = isTesting ? combine(base) : isDevelopment ? development : production
+const development = combine(common)({
+  output: {
+    pathinfo: true,
+  },
+  stats: {
+    errorDetails: true,
+    colors: true,
+  },
+  devtool: 'cheap-module-eval-source-map',
+  watch: true,
+})
+
+const test = combine(base)({
+  externals: {
+    'react/addons': 'react',
+    'react/lib/ExecutionEnvironment': 'react',
+    'react/lib/ReactContext': 'react',
+  },
+})
+
+module.exports = isTesting ? test : isDevelopment ? development : production
