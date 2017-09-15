@@ -1,32 +1,24 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
-    "moduleResolution": "node",
     "jsx": "react",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "sourceMap": false,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "pretty": true,
     "removeComments": true,
     "importHelpers": true,
-    "baseUrl": "src/scripts",
+    "baseUrl": "./src/scripts",
     "paths": {
-      "*": ["*"],
-      "app": ["src/scripts/app"]
-    },
-    "typeRoots": ["node_modules/@types", "src/scripts/types"]
+      "*": ["*"]
+    }
   },
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
+  "compileOnSave": false,
   "atom": {
     "rewriteTsConfig": false
-  },
-  "compileOnSave": false
+  }
 }

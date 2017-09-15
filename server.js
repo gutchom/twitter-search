@@ -16,5 +16,8 @@ app.get('/', (req, res) => {
 })
 
 app.listen(app.get('port'), () => {
-  console.log('Server started: ' + `http://localhost:${String(app.get('port'))}`.cyan)
+  console.log('------------------------')
+  console.log(' Local server started')
+  console.log(' http://localhost:' + String(app.get('port')).cyan)
+  console.log('------------------------')
 })

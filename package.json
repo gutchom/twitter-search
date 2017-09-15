@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development npm-run-all --silent -p dev:* server:*",
-    "test": "cross-env NODE_ENV=test karma start --single-run",
+    "test": "cross-env NODE_ENV=test karma start",
     "testing": "npm run test -- --auto-watch --no-single-run",
     "build": "cross-env NODE_ENV=production npm-run-all --silent lint:* test clean build:*",
     "build:asset": "sync-files ./src/assets/**/* ./public",
