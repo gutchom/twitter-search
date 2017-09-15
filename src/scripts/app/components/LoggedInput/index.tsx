@@ -1,111 +1,129 @@
-import React, { ChangeEvent, KeyboardEvent, MouseEvent } from 'react'
-import { queryLogger } from 'app/stores'
-import LoggedInputHintBox from './LoggedInputHintBox'
+import React, { ChangeEvent, FocusEvent, KeyboardEvent, MouseEvent } from 'react'
+import HistoryList from './HistoryList'
 
-export interface AppProps {
-  name: string
+export interface LoggedInputProps {
+  defaultValue?: string[]
+  history: string[]
+  onChange(keywords: string): void
+  onRemove(e: MouseEvent<HTMLButtonElement>): void
 }
 
-export interface AppState {
+export interface LoggedInputState {
   query: string
-  stampOnFocus: string
-  stampToLatest: string
+  queryOnFocus: string
+  queryOnBlur: string
   historyVisibility: boolean
+  historyCursor: number
 }
 
-class LoggedInput extends React.Component<AppProps, AppState> {
+class LoggedInput extends React.Component<LoggedInputProps, LoggedInputState> {
   input: HTMLInputElement
+  historyBox: HTMLUListElement
   state = {
-    query: 'gutchom',
-    stampOnFocus: '',
-    stampToLatest: '',
+    query: '',
+    queryOnFocus: '',
+    queryOnBlur: '',
     historyVisibility: false,
+    historyCursor: 0,
   }
 
-  constructor() {
-    super()
-    queryLogger.append('gutchom')
+  constructor(props: LoggedInputProps) {
+    super(props)
+
+    this.state.query = (this.props.defaultValue || []).join(' ')
+  }
+
+  get cursor(): number {
+    return this.state.historyCursor
+  }
+
+  set cursor(next: number) {
+    const index = next > this.props.history.length
+      ? this.props.history.length : next < 0
+        ? 0 : next
+
+    if (this.state.historyVisibility && index > 0) {
+      const item = this.historyBox.children[index - 1] as HTMLLIElement
+      this.historyBox.scrollTop = item.offsetTop + item.offsetHeight - this.historyBox.offsetHeight
+    } else {
+      this.historyBox.scrollTop = 0
+    }
+
+    this.props.onChange(next > 0
+      ? this.props.history[this.props.history.length - index]
+      : this.state.queryOnFocus)
+
+    this.setState({
+      query: next > 0
+        ? this.props.history[this.props.history.length - index]
+        : this.state.queryOnFocus,
+      historyVisibility: next > 0 && (this.props.history.length > 0),
+      historyCursor: index,
+    })
   }
 
   componentDidMount() {
-    document.body.addEventListener('click', () => {
-      this.setState({ historyVisibility: false })
-    }, false)
+    document.body.addEventListener('click', this.handleBodyClick, false)
 
-    this.input.addEventListener('click', (e) => {
-      e.stopPropagation()
-    }, false)
+    this.input.addEventListener('click', this.handleInputClick, false)
   }
 
-  handleUndo = () => {
-    queryLogger.undo(1)
+  componentWillUnmount() {
+    document.body.removeEventListener('click', this.handleBodyClick)
 
-    this.setState({
-      query: queryLogger.current as string,
-      historyVisibility: true,
-    })
+    this.input.removeEventListener('click', this.handleInputClick)
   }
 
-  handleRedo = () => {
-    queryLogger.redo(1)
+  handleBodyClick = () => {
+    this.setState({ historyVisibility: false })
+  }
 
-    this.setState({
-      query: queryLogger.current as string,
-      historyVisibility: true,
-    })
+  handleInputClick = (e: Event) => {
+    e.stopPropagation()
   }
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ query: e.target.value })
   }
 
-  handleInputFocus = () => {
-    queryLogger.latest()
-
+  handleInputFocus = (e: FocusEvent<HTMLInputElement>) => {
     this.setState({
-      query: queryLogger.current as string,
-      stampOnFocus: queryLogger.stamp,
+      queryOnFocus: (e.target as HTMLInputElement).value,
+      historyVisibility: (this.props.history.length > 0),
     })
   }
 
   handleInputBlur = () => {
-    if (this.input.value.length === 0 || /^\s+$/.test(this.input.value)) return
+    this.props.onChange(this.input.value)
 
-    if (queryLogger.current !== this.input.value) queryLogger.append(this.input.value)
+    this.setState({
+      query: this.input.value,
+      queryOnBlur: this.input.value,
+      historyVisibility: false,
+    })
   }
 
   handleInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    console.log(e.key)
-
-    if (e.key.length === 1) return
+    if (e.key.length === 1) { return }
 
     switch (e.key) {
       case 'Escape':
-        queryLogger.jump(this.state.stampOnFocus)
         this.setState({
-          query: queryLogger.current as string,
+          query: this.state.queryOnFocus,
           historyVisibility: false,
         })
         this.input.blur()
         break
 
       case 'Enter':
-        if (this.input.value.length === 0 || /^\s+$/.test(this.input.value)) break
-        queryLogger.append(this.input.value)
-        this.setState({ query: '' })
         break
 
       case 'ArrowUp':
-        if (queryLogger.cursor === 1) {
-          this.setState({ historyVisibility: false })
-          break
-        }
-
-        this.handleRedo()
+        this.cursor--
         break
 
       case 'ArrowDown':
-        this.handleUndo()
+        this.cursor++
         break
 
       default:
@@ -113,51 +131,36 @@ class LoggedInput extends React.Component<AppProps, AppState> {
     }
   }
 
-  handleHistoryClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-
-    this.setState({ historyVisibility: true })
-  }
-
   handleSelect = (cursor: number) => {
-    queryLogger.cursor = cursor
-    queryLogger.append(queryLogger.current)
+    this.props.onChange(this.props.history[this.props.history.length - cursor])
 
     this.setState({
-      query: queryLogger.current as string,
+      query: this.props.history[this.props.history.length - cursor],
       historyVisibility: false,
     })
   }
 
-  handleScroll = (offset: number, hintBox: HTMLUListElement) => {
-    console.log(offset)
-    console.log(hintBox.scrollHeight)
-    console.log(hintBox.scrollTop)
-  }
+  boxRef = (el: HTMLUListElement) => this.historyBox = el
 
   render() {
     return (
       <div className="query-input">
         <div className="text-input">
-          <input type="text"
+          <input placeholder="スペース区切りで複数入力可能"
                  value={this.state.query}
-                 onKeyUp={this.handleInputKeyUp}
+                 onChange={this.handleInputChange}
                  onFocus={this.handleInputFocus}
                  onBlur={this.handleInputBlur}
-                 onChange={this.handleInputChange}
+                 onKeyUp={this.handleInputKeyUp}
                  ref={(input: HTMLInputElement) => this.input = input} />
-          <button className="icon icon-clock" onClick={this.handleHistoryClick}>
-            <i className="fa fa-clock-o" aria-hidden="true" />
+          <button className="query-input--remove" tabIndex={-1} onClick={this.props.onRemove}>
+            <i className="fa fa-times"/>
           </button>
-          <button className="icon icon-search">
-            <i className="fa fa-search" aria-hidden="true" />
-          </button>
-          <LoggedInputHintBox visible={this.state.historyVisibility}
-                              name={this.props.name}
-                              hints={queryLogger.all.reverse()}
-                              selecting={queryLogger.cursor}
-                              handleSelect={this.handleSelect}
-                              handleScroll={this.handleScroll} />
+          <HistoryList visible={this.state.historyVisibility}
+                       history={Array(...this.props.history).reverse()}
+                       selecting={this.state.historyCursor}
+                       boxRef={this.boxRef}
+                       handleSelect={this.handleSelect} />
         </div>
       </div>
     )

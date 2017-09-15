@@ -1,10 +1,10 @@
 import React, { SFC } from 'react'
-import LoggedInput from './LoggedInput/LoggedInput'
+import QueryExpression from './QueryExpression'
 
 const App: SFC<{}> = () => {
   return (
     <div className="app">
-      <LoggedInput name="query"/>
+      <QueryExpression/>
     </div>
   )
 }

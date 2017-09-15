@@ -1,38 +1,28 @@
 import React from 'react'
 
-export interface LoggedInputHintProps {
-  name: string
-  hint: string
+export interface HistoryItemProps {
+  log: string
   position: number
   selecting: number
-  handleSelect: (cursor: number) => void
-  handleScroll: (offset: number) => void
+  handleSelect(cursor: number): void
 }
 
-const LoggedInputHint: React.SFC<LoggedInputHintProps> = props => {
-  let radioInput: HTMLInputElement
-
-  const handleRadioClick = () => {
-    props.handleSelect(props.position)
-    props.handleScroll(radioInput.offsetTop)
-  }
-
+const HistoryItem: React.SFC<HistoryItemProps> = props => {
   return (
-    <li className="hint">
-      <input className="radio-input"
-             type="radio"
-             id={`radio-${props.name}-${props.position}`}
-             name={props.name}
-             value={props.position}
-             checked={(props.position === props.selecting)}
-             onChange={function() { return }}
-             onClick={handleRadioClick}
-             ref={(radio: HTMLInputElement) => radioInput = radio} />
-      <label htmlFor={`radio-${props.name}-${props.position}`}>
-        <span>{props.hint}</span>
+    <li className="history--item">
+      <label>
+        <input className="checkbox"
+               type="checkbox"
+               tabIndex={-1}
+               value={props.position}
+               checked={(props.position === props.selecting)}
+               onClick={() => props.handleSelect(props.position)}/>
+        <div className="history--item--container">
+          <span className="history--item--body">{props.log}</span>
+        </div>
       </label>
     </li>
   )
 }
 
-export default LoggedInputHint
+export default HistoryItem

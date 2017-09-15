@@ -1,36 +1,26 @@
 import React from 'react'
-import LoggedInputHint from './LoggedInputHint'
+import HistoryItem from './HistoryItem'
 
-export interface LoggedInputHintBoxProps {
+export interface LHistoryListProps {
   visible: boolean
-  name: string
-  hints: string[]
+  history: string[]
   selecting: number
-  handleSelect: (cursor: number) => void
-  handleScroll: (offset: number, hintBox: HTMLUListElement) => void
+  boxRef(el: HTMLUListElement): void
+  handleSelect(cursor: number): void
 }
 
-const LoggedInputHintBox: React.SFC<LoggedInputHintBoxProps> = props => {
-  let ul: HTMLUListElement
-
-  const handleScroll = (offset: number) => {
-    props.handleScroll(offset, ul)
-  }
-
+const HistoryList: React.SFC<LHistoryListProps> = props => {
   return (
-    <ul className={`hint-box ${props.visible ? 'visible' : ''}`}
-        ref={(el: HTMLUListElement) => ul = el}>
-      {props.hints.map((hint, index) => (
-        <LoggedInputHint key={index}
-                         name={props.name}
-                         hint={hint}
-                         position={index + 1}
-                         selecting={props.selecting}
-                         handleSelect={props.handleSelect}
-                         handleScroll={handleScroll} />)
+    <ul ref={props.boxRef} className={`history--list ${props.visible ? 'visible' : ''}`}>
+      {props.history.map((log, index) => (
+        <HistoryItem key={index}
+                     log={log}
+                     position={index + 1}
+                     selecting={props.selecting}
+                     handleSelect={props.handleSelect} />)
       )}
     </ul>
   )
 }
 
-export default LoggedInputHintBox
+export default HistoryList
