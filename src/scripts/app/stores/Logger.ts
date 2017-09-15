@@ -1,142 +1,149 @@
-import moment from 'moment'
-
-const PREFIX = 'log-'
+const PREFIX = 'history-'
 const min = 1
 
-export interface Log {
-  data: string
-  id: string
-}
-
-export interface Restored {
-  version: string
-  lastUpdated: number
-  history: Log[]
-  cursor: number
-}
-
-export interface ProcessLogger<T> {
-  readonly current: T
+export interface History<T> {
+  readonly name: string
+  readonly length: number
   readonly stamp: string
-  readonly currentIndex: number
-  cursor: number
+  readonly latest: T
+  readonly oldest: T
+  readonly all: T[]
+  depth: number
+  undo(steps: number): T
+  redo(steps: number): T
+  load(depth: number): T
   jump(stamp: string): void
-  undo(step: number): void
-  redo(step: number): void
-  latest(): void
-  oldest(): void
-  load(): void
-  append(data: T): void
-  overwrite(data: T): void
+  save(data: T): void
+  restore(): void
 }
 
-export default class Logger<T> implements ProcessLogger<T> {
-  private noStorage: boolean = false
-  private version: string
-  private name: string
-  private expireHours: number | undefined
-  private history: Log[] = []
-  private depth = min
+export interface LoggerOptions {
+  duration?: number
+  size?: number
+}
 
-  constructor(version: string, name: string, expireHours?: number) {
+export interface Log {
+  stamp: string
+  data: string
+}
+
+export interface Archive {
+  version: string
+  timestamp: number
+  history: Log[]
+  depth: number
+}
+
+/**
+ * @classdesc State logger with a traversable history
+ * @constructor
+ * @param {string} name - Identifier key within "Local Storage"
+ * @param {string} version - Unique value given to each log data definitions
+ * @param {Object} options - Options
+ * @param {number} options.size - Maximum number to keep logs
+ * @param {number} options.duration - Hours to keep logs
+ */
+export default class Logger<T> implements History<T> {
+  key: string
+  version: string
+  private history: Log[] = []
+  private position = min
+  private size = 20
+  private duration = Infinity
+  private hasStorage = false
+
+  constructor(name: string, version: string, options?: LoggerOptions) {
+    this.key = PREFIX + name
     this.version = version
-    this.name = name
-    this.expireHours = expireHours
+
+    if (typeof options !== 'undefined') {
+      if (typeof options.size !== 'undefined') { this.size = options.size }
+      if (typeof options.duration !== 'undefined') { this.duration = options.duration }
+    }
 
     try {
-      if (typeof window.sessionStorage === 'undefined') this.noStorage = true
+      if (typeof window.localStorage === 'undefined') { this.hasStorage = false }
       const x = '__storage_test__'
       localStorage.setItem(x, x)
       localStorage.removeItem(x)
-      this.noStorage = false
-    }
-    catch (err) {
-      this.noStorage = true
+      this.hasStorage = true
+    } catch (err) {
+      this.hasStorage = false
     }
   }
 
-  get cursor(): number { return this.depth }
+  get name(): string { return this.key.slice(PREFIX.length) }
 
-  set cursor(next) {
-    this.depth = next > this.history.length ? this.history.length : next < min ? min : next
-    this.save()
-  }
+  get length(): number { return this.history.length }
 
-  get currentIndex(): number { return this.history.length - this.cursor }
+  get depth(): number { return this.position }
 
-  get current(): T { return JSON.parse(this.history[this.currentIndex].data) }
+  set depth(next) { this.position = next > this.length ? this.length : next < min ? min : next }
+
+  get latest(): T { return this.load(min) }
+
+  get oldest(): T { return this.load(this.length) }
 
   get all(): T[] { return this.history.map(log => JSON.parse(log.data)) }
 
-  get stamp(): string { return this.history[this.currentIndex].id }
+  get stamp(): string { return this.history[this.length - this.depth].stamp }
+
+  undo(steps = 1): T { return this.load(this.depth += steps) }
+
+  redo(steps = 1): T { return this.load(this.depth -= steps) }
+
+  load(depth = this.depth): T {
+    if (this.length === 0) {
+      throw new Error(`The history of logger "${this.name}" is empty.`)
+    } else {
+      return JSON.parse(this.history[this.length - depth].data)
+    }
+  }
 
   jump(stamp: string): void {
-    const index = this.history.findIndex(log => log.id === stamp)
-    if (index > 0) this.cursor = this.history.length - index
+    const index = this.history.findIndex(log => log.stamp === stamp)
+    if (index !== -1) { this.depth = this.length - index }
   }
 
-  latest(): void { this.cursor = min }
+  save(data: T): void {
+    this.history = this.history
+      .slice(-this.size, this.length - this.depth + 1)
+      .concat({
+        stamp: Date.now().toString(10) + this.length.toString(10),
+        data: JSON.stringify(data),
+      })
+    this.depth = min
 
-  oldest(): void { this.cursor = this.history.length }
+    if (!this.hasStorage) { return }
 
-  undo(step = 1): void { this.cursor += step > this.history.length ? this.history.length : step }
-
-  redo(step = 1): void { this.cursor -= step < min ? min : step }
-
-  append(data: T): void {
-    this.history.push(this.format(data))
-    this.latest()
+    localStorage.setItem(this.key, JSON.stringify({
+      version: this.version,
+      timestamp: Date.now(),
+      history: this.history,
+      depth: this.depth,
+    } as Archive))
   }
 
-  overwrite(data: T): void {
-    this.history = this.history.slice(0, this.currentIndex + 1).concat(this.format(data))
-    this.cursor = min
-  }
+  restore(): void {
+    if (this.hasStorage) { return }
 
-  load(): void {
-    if (this.noStorage) return
+    const json = localStorage.getItem(this.key)
 
-    const json = localStorage.getItem(PREFIX + this.name)
-    if (!json) return
+    if (!json) { return }
 
-    const restored: Restored = JSON.parse(json)
+    const archive: Archive = JSON.parse(json)
 
-    if (restored.version !== this.version) {
-      localStorage.removeItem(PREFIX + this.name)
+    if (archive.version !== this.version) {
+      localStorage.removeItem(this.key)
       return
     }
 
-    if (this.expireHours) {
-      if (moment().diff(moment(restored.lastUpdated), 'hours', true) > this.expireHours) {
-        localStorage.removeItem(PREFIX + this.name)
-        return
-      }
+    if (Date.now() - archive.timestamp > this.duration * 60 * 60 * 1000) {
+      localStorage.removeItem(this.key)
+      return
     }
 
-    this.history = this.history.concat(restored.history)
-    this.cursor = restored.cursor
-  }
-
-  private save(): void {
-    if (this.noStorage) return
-
-    const log = {
-      version: this.version,
-      lastUpdated: Date.now(),
-      history: this.history,
-      cursor: this.cursor,
-    }
-
-    localStorage.setItem(PREFIX + this.name, JSON.stringify(log))
-  }
-
-  private format(data: T): Log {
-    const time = Date.now().toString(10)
-    const json = JSON.stringify(data)
-
-    return {
-      data: json,
-      id: json + time,
-    }
+    this.history.splice(0, this.length, ...archive.history)
+    this.depth = archive.depth
   }
 }
