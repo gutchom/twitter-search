@@ -1,14 +1,20 @@
-const merge = require('./webpack.config')
+const merge = require('./webpack.common')
 
-module.exports = function(config) {
+module.exports = config => {
   config.set({
     basePath: './src/scripts',
     frameworks: ['power-assert', 'mocha'],
     browsers: ['ChromeHeadless'],
+    mime: {
+      'text/x-typescript': ['ts','tsx']
+    },
     files: [
-      'test/**/*.test.ts',
-      'test/**/*.test.tsx',
+      'test/**/*.test.+(ts|tsx)',
     ],
+    preprocessors: {
+      'app/**/*.+(ts|tsx)': ['webpack', 'sourcemap'],
+      'test/**/*.test.+(ts|tsx)': ['webpack', 'sourcemap'],
+    },
     plugins: [
       'karma-coverage',
       'karma-mocha',
@@ -19,15 +25,9 @@ module.exports = function(config) {
       'karma-sourcemap-loader',
       'karma-webpack',
     ],
-    preprocessors: {
-      'app/**/*.ts': ['webpack', 'sourcemap'],
-      'app/**/*.tsx': ['webpack', 'sourcemap'],
-      'test/**/*.test.ts': ['webpack', 'sourcemap'],
-      'test/**/*.test.tsx': ['webpack', 'sourcemap'],
-    },
     port: 9876,
     concurrency: Infinity,
-    singleRun: false,
+    singleRun: true,
     reporters: ['mocha'],
     mochaReporter: {
       colors: true,

@@ -41,16 +41,16 @@ const base = {
           { loader: 'ts-loader' },
         ],
       },
-      {
-        test: /\.json$/,
-        loader: 'json-loader',
-      },
     ],
   },
 }
 
 const common = combine(base)({
   entry: {
+    vendor: [
+      'react',
+      'react-dom',
+    ],
     app: resolve(__dirname, 'src/scripts/app/index.tsx')
   },
   output: {

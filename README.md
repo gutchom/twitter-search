@@ -1,3 +1,6 @@
+Observe 2ch
+===
+
 Observe them.
 
 How to develop
