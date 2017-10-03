@@ -34,6 +34,7 @@ const base = {
 }
 
 const test = combine(base)({
+  devtool: 'cheap-module-eval-source-map',
   externals: {
     'react/lib/ExecutionEnvironment': 'react',
     'react/lib/ReactContext': 'react',
@@ -80,6 +81,7 @@ const common = combine(base)({
 })
 
 const development = combine(common)({
+  devtool: 'cheap-module-eval-source-map',
   output: {
     pathinfo: true,
   },
@@ -87,7 +89,6 @@ const development = combine(common)({
     errorDetails: true,
     colors: true,
   },
-  devtool: 'cheap-module-eval-source-map',
   watch: true,
 })
 
