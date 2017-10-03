@@ -1,26 +1,26 @@
 import React from 'react'
-import HistoryItem from './HistoryItem'
+import DrawerOption from './Option'
 
-export interface LHistoryListProps {
+export interface DrawerProps {
   visible: boolean
-  history: string[]
-  selecting: number
-  boxRef(el: HTMLUListElement): void
-  handleSelect(cursor: number): void
+  options: string[]
+  chosen: number
+  ref(el: HTMLUListElement): void
+  onChange(cursor: number): void
 }
 
-const HistoryList: React.SFC<LHistoryListProps> = props => {
+const Drawer: React.SFC<DrawerProps> = props => {
   return (
-    <ul ref={props.boxRef} className={`history--list ${props.visible ? 'visible' : ''}`}>
-      {props.history.map((log, index) => (
-        <HistoryItem key={index}
-                     log={log}
-                     position={index + 1}
-                     selecting={props.selecting}
-                     handleSelect={props.handleSelect} />)
+    <ul ref={props.ref} className={`query-input--drawer${props.visible ? ' visible' : ''}`}>
+      {props.options.map((option, index) =>
+        <DrawerOption key={index}
+                      option={option}
+                      position={index + 1}
+                      checked={(index + 1 === props.chosen)}
+                      onChange={props.onChange} />
       )}
     </ul>
   )
 }
 
-export default HistoryList
+export default Drawer

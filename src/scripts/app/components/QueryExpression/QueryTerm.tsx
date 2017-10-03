@@ -1,57 +1,50 @@
 import React, { ChangeEvent } from 'react'
-import LoggedInput from '../LoggedInput'
+import SelectableInput from 'app/components/SelectableInput'
 
-export enum LogicalOperation {
-  AND,
-  OR,
-  NOR,
-}
+export type QueryOperator = 'AND' | 'OR'
 
-export interface QueryTerm {
-  interOperation: LogicalOperation
-  coOperation: LogicalOperation
+export type LogicalOperator =  QueryOperator | 'NOR'
+
+export interface QueryCondition {
   keywords: string[]
+  queryOperator: QueryOperator
+  keywordOperator: LogicalOperator
 }
 
-export interface QueryTermElement {
-  [key: string]: LogicalOperation|string[]
-}
-
-export interface ExpressionTermProps {
-  defaultValue?: QueryTerm
-  history: string[]
+export interface QueryTermProps {
   position: number
-  onChange(position: number, query: QueryTermElement): void
+  defaults: QueryCondition
+  suggestions: string[]
+  onChange(position: number, condition: QueryCondition): void
   onRemove(position: number): void
 }
 
-export interface ExpressionTermState extends QueryTerm {
+export enum Operator { AND, OR, NOR }
+
+export const translate = {
+  sign: ['+', '?', '-'],
+  queryJa: ['なおかつ', 'もしくは'],
+  keysJa: ['の全てを含む', 'のどれかを含む', 'のどれも含まない'],
 }
 
-class ExpressionTerm extends React.Component<ExpressionTermProps, ExpressionTermState> {
-  state = {
-    interOperation: this.props.defaultValue ? this.props.defaultValue.interOperation : LogicalOperation.AND,
-    coOperation: this.props.defaultValue ? this.props.defaultValue.coOperation : LogicalOperation.AND,
-    keywords: this.props.defaultValue ? this.props.defaultValue.keywords : [],
+export default class QueryTerm extends React.Component<QueryTermProps, QueryCondition> {
+  state = this.props.defaults
+
+  handleChange(param: Partial<QueryCondition>) {
+    this.setState({ ...this.state, ...param })
+    this.props.onChange(this.props.position, { ...this.state, ...param })
   }
 
-  constructor(props: ExpressionTermProps) {
-    super(props)
+  handleKeywordChange = (keywords: string[]) => {
+    this.handleChange({ keywords })
   }
 
-  handleInterOperationChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.setState({ interOperation: parseInt(e.target.value, 10) as LogicalOperation })
-    this.props.onChange(this.props.position, { interOperation: parseInt(e.target.value, 10) as LogicalOperation })
+  handleQueryOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    this.handleChange({ queryOperator: e.target.value as QueryOperator })
   }
 
-  handleCoOperationChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.setState({ coOperation: parseInt(e.target.value, 10) as LogicalOperation })
-    this.props.onChange(this.props.position, { coOperation: parseInt(e.target.value, 10) as LogicalOperation })
-  }
-
-  handleInputChange = (keywords: string) => {
-    this.setState({ keywords: (keywords || '').replace(/\s+/g, ' ').split(/\s/) })
-    this.props.onChange(this.props.position, { keywords: (keywords || '').replace(/\s+/g, ' ').split(/\s/) })
+  handleKeywordOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    this.handleChange({ keywordOperator: e.target.value as LogicalOperator })
   }
 
   handleRemove = () => {
@@ -63,28 +56,27 @@ class ExpressionTerm extends React.Component<ExpressionTermProps, ExpressionTerm
       <li className="query-expression--term">
         {this.props.position === 0 ? '' : (
           <select className="logical-operator"
-                  value={this.state.interOperation}
-                  onChange={this.handleInterOperationChange}>
-            <option value={LogicalOperation.AND}>なおかつ</option>
-            <option value={LogicalOperation.OR}>もしくは</option>
+                  value={this.state.queryOperator}
+                  onChange={this.handleQueryOperatorChange}>
+            {Array(2).fill(null).map((_, type) =>
+              <option value={Operator[type]}>{translate.queryJa[type]}</option>
+            )}
           </select>
         )}
 
-        <LoggedInput defaultValue={this.state.keywords}
-                     history={this.props.history}
-                     onChange={this.handleInputChange}
-                     onRemove={this.handleRemove}/>
+        <SelectableInput defaults={this.state.keywords}
+                         options={this.props.suggestions}
+                         onChange={this.handleKeywordChange}
+                         onRemove={this.handleRemove}/>
 
         <select className="logical-operator"
-                value={this.state.coOperation}
-                onChange={this.handleCoOperationChange}>
-          <option value={LogicalOperation.AND}>を全て含む</option>
-          <option value={LogicalOperation.OR}>のどれかを含む</option>
-          <option value={LogicalOperation.NOR}>のどれも含まない</option>
+                value={this.state.keywordOperator}
+                onChange={this.handleKeywordOperatorChange}>
+          {Array(3).fill(null).map((_, type) =>
+            <option value={Operator[type]}>{translate.keysJa[type]}</option>
+          )}
         </select>
       </li>
     )
   }
 }
-
-export default ExpressionTerm

@@ -1,55 +1,59 @@
 import React from 'react'
 import Logger from 'app/stores/Logger'
-import ExpressionTerm, { QueryTerm, QueryTermElement } from './ExpressionTerm'
-import { immutable } from 'array-unique'
+import QueryTerm, { QueryCondition } from './QueryTerm'
 
-export interface QueryExpressionProps {
+const defaultCondition: QueryCondition = {
+  queryOperator: 'AND',
+  keywordOperator: 'OR',
+  keywords: [],
 }
 
 export interface QueryExpressionState {
-  terms: QueryTerm[]
+  query: QueryCondition[]
 }
 
-class QueryExpression extends React.Component<QueryExpressionProps, QueryExpressionState> {
-  logger: Logger<QueryTerm[]> = new Logger('query-expression', '1.0')
-  state: QueryExpressionState = {
-    terms: [{
-      interOperation: 0,
-      coOperation: 1,
-      keywords: [],
-    }],
+class QueryExpression extends React.Component<{}, QueryExpressionState> {
+  logger = new Logger<QueryCondition[]>('query-expression', '1.0', { size: 20 })
+  state = {
+    query: [defaultCondition],
+    isHistoryOpen: false,
   }
 
-  constructor(props: QueryExpressionProps) {
+  constructor(props: {}) {
     super(props)
 
     this.logger.restore()
   }
 
-  handleQueryChange = (position: number, query: QueryTermElement) => {
+  get suggestions(): string[] {
+    return this.logger.length > 0
+      ? this.logger.all
+        .reduce((pre: string[], nex) => pre.concat(nex.map(({ keywords }) => keywords.join(' '))), [])
+        .filter(keywords => keywords.length > 0)
+        .unique()
+      : []
+  }
+
+  handleQueryChange = (position: number, next: QueryCondition) => {
     this.setState({
-      terms: this.state.terms.map((term, index) => index === position ? {...term, ...query} : term),
+      query: this.state.query.map((old, index) => index === position ? next : old),
     })
   }
 
   handleQueryRemove = (position: number) => {
     this.setState({
-      terms: this.state.terms.filter((term, index) => index !== position),
+      query: this.state.query.filter((_, index) => index !== position),
     })
   }
 
   handleAddClick = () => {
     this.setState({
-      terms: this.state.terms.concat({
-        interOperation: 0,
-        coOperation: 1,
-        keywords: [],
-      }),
+      query: this.state.query.concat(defaultCondition),
     })
   }
 
   handleSearchClick = () => {
-    this.logger.save(this.state.terms)
+    this.logger.save(this.state.query)
     this.forceUpdate()
   }
 
@@ -58,25 +62,17 @@ class QueryExpression extends React.Component<QueryExpressionProps, QueryExpress
   }
 
   render() {
-    const history = this.logger.length > 0
-      ? immutable(
-        this.logger.all
-          .map(terms => terms.map(term => term.keywords))
-          .reduce((pre, nex) => pre.concat(nex), [])
-          .map(keywords => keywords.join(' '))
-          .filter(keyword => keyword.length > 0)
-      ) : []
-
     return (
       <ul className="query-expression">
-        {...this.state.terms.map((term, index) =>
-          <ExpressionTerm key={index}
-                          onChange={this.handleQueryChange}
-                          onRemove={this.handleQueryRemove}
-                          position={index}
-                          history={history}
-                          defaultValue={term}/>
+        {...this.state.query.map((condition, index) =>
+          <QueryTerm key={index}
+                     position={index}
+                     defaults={condition}
+                     suggestions={this.suggestions}
+                     onChange={this.handleQueryChange}
+                     onRemove={this.handleQueryRemove} />
         )}
+
         <li className="query-expression--term">
           <button className="query-expression--button" onClick={this.handleHistoryClick}>
             <i className="fa fa-clock-o"/>
@@ -87,6 +83,11 @@ class QueryExpression extends React.Component<QueryExpressionProps, QueryExpress
           <button className="query-expression--button" onClick={this.handleSearchClick}>
             <i className="fa fa-search"/>
           </button>
+        </li>
+        <li>
+          <Modal isOpen={this.state.isHistoryOpen} onCancel={this.handleModaleCancel}>
+            <History history={this.logger.all} onRevert={this.handleHistoryRevert}/>
+          </Modal>
         </li>
       </ul>
     )

@@ -1,28 +1,34 @@
 import React from 'react'
 
-export interface HistoryItemProps {
-  log: string
+export interface OptionProps {
+  checked: boolean
   position: number
-  selecting: number
-  handleSelect(cursor: number): void
+  option: string
+  onChange(cursor: number): void
 }
 
-const HistoryItem: React.SFC<HistoryItemProps> = props => {
+const Option: React.SFC<OptionProps> = props => {
+  if (props.checked) { props.onChange(props.position) }
+
+  function handleClick() {
+    props.onChange(props.position)
+  }
+
   return (
-    <li className="history--item">
+    <li className="query-input--option">
       <label>
         <input className="checkbox"
                type="checkbox"
                tabIndex={-1}
+               checked={props.checked}
                value={props.position}
-               checked={(props.position === props.selecting)}
-               onClick={() => props.handleSelect(props.position)}/>
-        <div className="history--item--container">
-          <span className="history--item--body">{props.log}</span>
+               onClick={handleClick} />
+        <div className="query-input--option--container">
+          <span className="query-input--option--body">{props.option}</span>
         </div>
       </label>
     </li>
   )
 }
 
-export default HistoryItem
+export default Option
