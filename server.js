@@ -1,23 +1,12 @@
 require('colors')
-const { resolve } = require('path')
 const express = require('express')
-const bodyParser = require('body-parser')
 const app = express()
 
-app.set('port', (process.env.PORT || 3000))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
-app.use('/', express.static(resolve(__dirname, './public')))
-app.set('views', resolve(__dirname, './src/views'))
-app.set('view engine', 'pug')
+app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-  res.render('pages/index.pug')
-})
-
-app.listen(app.get('port'), () => {
-  console.log('------------------------')
-  console.log(' Local server started')
-  console.log(' http://localhost:' + String(app.get('port')).cyan)
-  console.log('------------------------')
+const server = app.listen(process.env.PORT || 3000, () => {
+  console.log('--------------------------'.magenta)
+  console.log(' Local server has started'.magenta)
+  console.log(` on ${`http://localhost:${String(server.address().port)}`.cyan}`.magenta)
+  console.log('--------------------------'.magenta)
 })
