@@ -31,6 +31,13 @@ const base = {
       app: resolve(__dirname, 'src/scripts/app'),
     },
   },
+}
+
+const test = combine(base)({
+  externals: {
+    'react/lib/ExecutionEnvironment': 'react',
+    'react/lib/ReactContext': 'react',
+  },
   module: {
     rules: [
       {
@@ -38,12 +45,17 @@ const base = {
         exclude: ['node_modules'],
         use: [
           { loader: 'babel-loader' },
-          { loader: 'ts-loader' },
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: resolve(__dirname, 'tsconfig.test.json'),
+            },
+          },
         ],
       },
     ],
   },
-}
+})
 
 const common = combine(base)({
   entry: {
@@ -53,20 +65,18 @@ const common = combine(base)({
     filename: '[name].js',
     path: resolve(__dirname, 'public/js'),
   },
-})
-
-const production = combine(common)({
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      mangle: false,
-      compress: true,
-      parallel: true,
-      output: {
-        comments: false,
-        beautify: false,
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: ['node_modules', /\.test\.tsx?$/],
+        use: [
+          { loader: 'babel-loader' },
+          { loader: 'ts-loader' },
+        ],
       },
-    }),
-  ],
+    ],
+  },
 })
 
 const development = combine(common)({
@@ -81,12 +91,18 @@ const development = combine(common)({
   watch: true,
 })
 
-const test = combine(base)({
-  externals: {
-    'react/addons': 'react',
-    'react/lib/ExecutionEnvironment': 'react',
-    'react/lib/ReactContext': 'react',
-  },
+const production = combine(common)({
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({
+      mangle: false,
+      compress: true,
+      parallel: true,
+      output: {
+        comments: false,
+        beautify: false,
+      },
+    }),
+  ],
 })
 
 module.exports = isTesting ? test : isDevelopment ? development : production

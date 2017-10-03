@@ -12,11 +12,22 @@
     "removeComments": true,
     "importHelpers": true,
     "baseUrl": "./src/scripts",
+    "typeRoots" : [
+      "types",
+      "./node_modules/@types"
+    ],
     "paths": {
       "*": ["*"]
     }
   },
-  "exclude": ["node_modules"],
+  "include": [
+    "src/scripts/**/*"
+  ],
+  "exclude": [
+    "./node_modules",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ],
   "compileOnSave": false,
   "atom": {
     "rewriteTsConfig": false
