@@ -1,5 +1,16 @@
-const PREFIX = 'history-'
-const min = 1
+const prefix = 'history-'
+
+export interface Log {
+  data: string
+  stamp: string
+}
+
+export interface Archive {
+  depth: number
+  history: Log[]
+  version: string
+  timestamp: number
+}
 
 export interface History<T> {
   readonly name: string
@@ -9,141 +20,133 @@ export interface History<T> {
   readonly oldest: T
   readonly all: T[]
   depth: number
+  jump(stamp: string): boolean
   undo(steps: number): T
   redo(steps: number): T
   load(depth: number): T
-  jump(stamp: string): void
-  save(data: T): void
-  restore(): void
-}
-
-export interface LoggerOptions {
-  duration?: number
-  size?: number
-}
-
-export interface Log {
-  stamp: string
-  data: string
-}
-
-export interface Archive {
-  version: string
-  timestamp: number
-  history: Log[]
-  depth: number
+  save(data: T): this
+  restore(): boolean
 }
 
 /**
  * @classdesc State logger with a traversable history
  * @constructor
- * @param {string} name - Identifier key within "Local Storage"
- * @param {string} version - Unique value given to each log data definitions
- * @param {Object} options - Options
- * @param {number} options.size - Maximum number to keep logs
- * @param {number} options.duration - Hours to keep logs
+ * @param {string} name - unique key within "Local Storage"
+ * @param {string} version - identifier of log format
+ * @param {Object} options
+ * @param {number} options.size - max length of history
+ * @param {number} options.duration - hours to keep history on LocalStorage
  */
 export default class Logger<T> implements History<T> {
-  key: string
-  version: string
-  private history: Log[] = []
-  private position = min
-  private size = 20
+  private key: string
+  private version: string
+  private size = Infinity
   private duration = Infinity
   private hasStorage = false
+  private position = 0
+  private history: Log[] = []
 
-  constructor(name: string, version: string, options?: LoggerOptions) {
-    this.key = PREFIX + name
+  constructor(name: string, version: string, options?: { duration?: number, size?: number }) {
+    this.key = prefix + name
     this.version = version
 
     if (typeof options !== 'undefined') {
-      if (typeof options.size !== 'undefined') { this.size = options.size }
-      if (typeof options.duration !== 'undefined') { this.duration = options.duration }
+      if (typeof options.size === 'number') { this.size = options.size }
+      if (typeof options.duration === 'number') { this.duration = options.duration }
     }
 
-    try {
-      if (typeof window.localStorage === 'undefined') { this.hasStorage = false }
-      const x = '__storage_test__'
-      localStorage.setItem(x, x)
-      localStorage.removeItem(x)
-      this.hasStorage = true
-    } catch (err) {
+    if (typeof localStorage === 'undefined') {
       this.hasStorage = false
+    } else {
+      try {
+        localStorage.setItem('test', 'test')
+        localStorage.removeItem('test')
+        this.hasStorage = true
+      } catch (err) {
+        this.hasStorage = false
+      }
     }
   }
 
-  get name(): string { return this.key.slice(PREFIX.length) }
+  get name(): string { return this.key.slice(prefix.length) }
 
   get length(): number { return this.history.length }
 
-  get depth(): number { return this.position }
+  get stamp(): string { return this.current.stamp }
 
-  set depth(next) { this.position = next > this.length ? this.length : next < min ? min : next }
-
-  get latest(): T { return this.load(min) }
+  get latest(): T { return this.load(1) }
 
   get oldest(): T { return this.load(this.length) }
 
   get all(): T[] { return this.history.map(log => JSON.parse(log.data)) }
 
-  get stamp(): string { return this.history[this.length - this.depth].stamp }
+  get depth(): number { return this.length - this.cursor }
+
+  set depth(next) { this.cursor = this.length - next }
+
+  private get current(): Log { return this.history[this.cursor] }
+
+  private get cursor(): number { return this.position }
+
+  private set cursor(next) { this.position = next >= this.length ? this.length - 1 : next >= 0 ? next : 0 }
 
   undo(steps = 1): T { return this.load(this.depth += steps) }
 
   redo(steps = 1): T { return this.load(this.depth -= steps) }
 
+  jump(stamp: string): boolean {
+    const index = this.history.findIndex(log => log.stamp === stamp)
+
+    return (index !== -1 && !!(this.cursor = index) || true)
+  }
+
   load(depth = this.depth): T {
     if (this.length === 0) {
-      throw new Error(`The history of logger "${this.name}" is empty.`)
+      throw new Error(`Logger "${this.name}" has no history.`)
     } else {
-      return JSON.parse(this.history[this.length - depth].data)
+      return JSON.parse(this.history[this.length - (this.depth = depth)].data)
     }
   }
 
-  jump(stamp: string): void {
-    const index = this.history.findIndex(log => log.stamp === stamp)
-    if (index !== -1) { this.depth = this.length - index }
-  }
-
-  save(data: T): void {
+  save(data: T): this {
     this.history = this.history
-      .slice(-this.size, this.length - this.depth + 1)
+      .slice(this.cursor - this.size, this.cursor + 1)
       .concat({
-        stamp: Date.now().toString(10) + this.length.toString(10),
         data: JSON.stringify(data),
+        stamp: Date.now().toString(10) + this.history.length.toString(10),
       })
-    this.depth = min
 
-    if (!this.hasStorage) { return }
+    this.depth = 1
 
-    localStorage.setItem(this.key, JSON.stringify({
-      version: this.version,
-      timestamp: Date.now(),
-      history: this.history,
-      depth: this.depth,
-    } as Archive))
+    if (this.hasStorage) {
+      localStorage.setItem(this.key, JSON.stringify({
+        depth: this.depth,
+        history: this.history,
+        version: this.version,
+        timestamp: Date.now(),
+      } as Archive))
+    }
+
+    return this
   }
 
-  restore(): void {
-    if (this.hasStorage) { return }
+  restore(): boolean {
+    if (!this.hasStorage) { return false }
 
     const json = localStorage.getItem(this.key)
 
-    if (!json) { return }
+    if (!json) { return false }
 
-    const archive: Archive = JSON.parse(json)
+    const archive = JSON.parse(json) as Archive
 
-    if (archive.version !== this.version) {
+    if (archive.version !== this.version || Date.now() - archive.timestamp > this.duration * 60 * 60 * 1000) {
       localStorage.removeItem(this.key)
-      return
+      return false
     }
 
-    if (Date.now() - archive.timestamp > this.duration * 60 * 60 * 1000) {
-      localStorage.removeItem(this.key)
-      return
-    }
-
-    this.history.splice(0, this.length, ...archive.history)
     this.depth = archive.depth
+    this.history = archive.history.slice(this.cursor - this.size, archive.history.length)
+
+    return true
   }
 }
