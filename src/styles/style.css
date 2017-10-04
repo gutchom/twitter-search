@@ -1,23 +1,15 @@
 @import "normalize.css";
-
-@custom-media --screen-phone (width <= 640px);
-@custom-media --screen-tablet (width > 640px);
-@custom-media --screen-laptop (width > 960px);
-@custom-media --screen-desktop (width > 1200px);
-
-:root {
-  --color-select: #65b3c1;
-  --color-hover: #648dbd;
-  --color-gray: #ddd;
-  --radius: 12px;
-  --transition-duration: 0.3s;
-  --query-input-width: 96%;
-  --query-input-base-width: 320px;
-}
+@import "./modal.css";
+@import "./query-expression.css";
 
 html,
 body {
+  font-family: "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
   height: 100%;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  letter-spacing: 0.075em;
 }
 
 ul {
@@ -39,174 +31,12 @@ button {
   display: none;
 }
 
-.query-expression--term {
-  border-bottom: 1px solid var(--color-gray);
-  margin: 6px;
+header {
+  background: var(--color-select);
+  color: #fff;
   padding: 6px;
 
-  &:last-child {
-    border: none;
-    text-align: center;
-  }
-}
-
-.query-expression--button {
-  border: 3px solid var(--color-gray);
-  border-radius: 50%;
-  display: inline-block;
-  height: 2.4em;
-  margin: 0 6px 48px;
-  width: 2.4em;
-
-  &:focus {
-    border-color: var(--color-select);
-    box-shadow: 0 0 3px 3px color(var(--color-select) alpha(70%));
-    color: var(--color-select);
-  }
-}
-
-.logical-operator {
-  -webkit-appearance: none;
-  background: #fff;
-  border: 3px solid var(--color-gray);
-  border-radius: calc(var(--radius) * 0.5);
-  display: block;
-  height: 2em;
-  margin: 2px;
-  outline: none;
-  text-align: center;
-  transition: width var(--transition-duration);
-  width: auto;
-
-  &:first-child {
-    margin-left: 8px;
-    margin-right: auto;
-  }
-
-  &:last-child {
-    margin-left: auto;
-    margin-right: 8px;
-  }
-
-  &:focus {
-    border-color: var(--color-select);
-    box-shadow: 0 0 3px 3px color(var(--color-select) alpha(70%));
-    color: var(--color-select);
-  }
-}
-
-.query-input {
-  margin: 2px;
-  position: relative;
-  text-align: center;
-
-  & .query-input--remove {
-    background: #333;
-    border-radius: 50%;
-    box-sizing: content-box;
-    color: #fff;
-    display: block;
-    height: 1.2em;
-    line-height: 1em;
-    position: absolute;
-    right: -0.4em;
-    top: -0.4em;
-    transform: scale(0);
-    transition: transform var(--transition-duration);
-    width: 1.2em;
-  }
-
-  & > input {
-    -webkit-appearance: none;
-    border: 3px solid var(--color-gray);
-    border-radius: var(--radius);
-    font-size: 0.75em;
-    margin: auto;
-    outline: none;
-    padding: 8px 0;
-    position: relative;
-    text-align: center;
-    transition: var(--transition-duration);
-    width: calc(var(--query-input-width) * 0.75);
-
-    @media (--screen-tablet) {
-      width: calc(var(--query-input-base-width) * 0.75);
-    }
-
-    &:focus {
-      border-color: var(--color-select);
-      box-shadow: 0 0 3px 3px color(var(--color-select) alpha(70%));
-      color: var(--color-select);
-      font-size: 1.2em;
-      width: calc(var(--query-input-width) * 1);
-      z-index: 15;
-
-      @media (--screen-tablet) {
-        width: calc(var(--query-input-base-width) * 1);
-      }
-
-      & ~ .query-input--remove {
-        transform: scale(1);
-      }
-
-      & ~ .query-input--drawer {
-        max-width: calc(var(--query-input-width) * 0.92);
-        min-width: calc(var(--query-input-width) * 0.48);
-      }
-    }
-  }
-
-  & .query-input--drawer {
-    background: #fff;
-    border-radius: 0 0 calc(var(--radius) * 0.5) calc(var(--radius) * 0.5);
-    box-sizing: content-box;
-    left: -50%;
-    margin: 0 auto;
-    max-height: 0;
-    max-width: calc(var(--query-input-width) * 0.46);
-    min-width: calc(var(--query-input-width) * 0.24);
-    overflow-y: scroll;
-    padding: 0;
-    position: absolute;
-    right: -50%;
-    transition: var(--transition-duration);
-    z-index: 10;
-
-    &.visible {
-      box-shadow: 0 0 6px 3px var(--color-gray);
-      max-height: 10em;
-    }
-
-    & .query-input--option {
-      border-top: 1px solid var(--color-gray);
-      display: block;
-      line-height: 1em;
-      text-align: center;
-      width: 100%;
-
-      & .query-input--option--body {
-        font-size: 1em;
-        transition: color calc(var(--transition-duration) * 0.5);
-      }
-
-      & .query-input--option--container {
-        border-radius: 4px;
-        box-sizing: border-box;
-        height: 100%;
-        padding: 6px 0;
-        transition: background calc(var(--transition-duration) * 0.5);
-        width: 100%;
-
-        &:hover {
-          border: 2px solid var(--color-hover);
-          padding: 4px 0;
-        }
-
-        @nest .checkbox:checked ~ & {
-          background: color(var(--color-select) alpha(-24%));
-          color: #fff;
-        }
-      }
-    }
+  & h1 {
+    margin: 0;
   }
 }
