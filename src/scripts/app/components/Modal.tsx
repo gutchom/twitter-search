@@ -24,11 +24,11 @@ export default class Modal extends React.Component<ModalProps, {}> {
   componentDidMount() {
     window.addEventListener('touchmove', this.preventBehindScroll)
     this.content.addEventListener('scroll', this.adjustScroll)
-    this.content.scrollTop = 1
   }
 
   componentWillReceiveProps(nextProps: ModalProps) {
     if (nextProps.isOpen === true) {
+      this.content.scrollTop = 1
       this.rootScrollPosition = document.body.scrollTop || document.documentElement.scrollTop
     }
   }
@@ -50,9 +50,9 @@ export default class Modal extends React.Component<ModalProps, {}> {
     const bottom = this.content.scrollHeight - this.content.clientHeight
 
     if (this.props.isOpen) {
-      if (scrollTop !== 0 || scrollTop !== bottom || isModal(e.target as HTMLElement)) {
+      if (isModal(e.target as HTMLElement)) {
         e.stopPropagation()
-      } else {
+      } else if (scrollTop === 0 || scrollTop === bottom) {
         e.preventDefault()
       }
     }
