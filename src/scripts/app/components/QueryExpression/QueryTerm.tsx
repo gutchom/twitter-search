@@ -1,9 +1,17 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, KeyboardEvent } from 'react'
 import SelectableInput from 'app/components/SelectableInput'
 
 export type QueryOperator = 'AND' | 'OR'
 
 export type LogicalOperator =  QueryOperator | 'NOR'
+
+export enum Operator { AND, OR, NOR }
+
+export const translate = {
+  sign: ['+', '?', '-'],
+  queryJa: ['なおかつ', 'もしくは'],
+  keysJa: ['の全てを含む', 'のどれかを含む', 'のどれも含まない'],
+}
 
 export interface QueryCondition {
   keywords: string[]
@@ -15,67 +23,81 @@ export interface QueryTermProps {
   position: number
   defaults: QueryCondition
   suggestions: string[]
-  onChange(position: number, condition: QueryCondition): void
+  onSubmit(): void
+  onChange(position: number, condition: Partial<QueryCondition>): void
   onRemove(position: number): void
 }
 
-export enum Operator { AND, OR, NOR }
-
-export const translate = {
-  sign: ['+', '?', '-'],
-  queryJa: ['なおかつ', 'もしくは'],
-  keysJa: ['の全てを含む', 'のどれかを含む', 'のどれも含まない'],
+export interface QueryTermState extends QueryCondition {
+  confirming: boolean
 }
 
-export default class QueryTerm extends React.Component<QueryTermProps, QueryCondition> {
-  state = this.props.defaults
-
-  handleChange(param: Partial<QueryCondition>) {
-    this.setState({ ...this.state, ...param })
-    this.props.onChange(this.props.position, { ...this.state, ...param })
+export default class QueryTerm extends React.Component<QueryTermProps, QueryTermState> {
+  state = {
+    ...this.props.defaults,
+    confirming: false,
   }
 
   handleKeywordChange = (keywords: string[]) => {
-    this.handleChange({ keywords })
+    this.setState({ keywords })
+    this.props.onChange(this.props.position, { keywords })
   }
 
   handleQueryOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.handleChange({ queryOperator: e.target.value as QueryOperator })
+    this.setState({ queryOperator: e.target.value as QueryOperator })
+    this.props.onChange(this.props.position, { queryOperator: e.target.value as QueryOperator })
   }
 
   handleKeywordOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.handleChange({ keywordOperator: e.target.value as LogicalOperator })
+    this.setState({ keywordOperator: e.target.value as LogicalOperator })
+    this.props.onChange(this.props.position, { keywordOperator: e.target.value as LogicalOperator })
   }
 
   handleRemove = () => {
-    this.props.onRemove(this.props.position)
+    if (this.state.confirming) {
+      this.props.onRemove(this.props.position)
+    } else {
+      this.setState({ confirming: true })
+    }
+  }
+
+  handleEnter = (e: KeyboardEvent<HTMLSelectElement>) => {
+    if (e.key === 'Enter') { this.props.onSubmit() }
   }
 
   render() {
     return (
       <li className="query-expression--term">
-        {this.props.position === 0 ? '' : (
+        {this.props.position === 0 ||
           <select className="logical-operator"
                   value={this.state.queryOperator}
+                  onKeyUp={this.handleEnter}
                   onChange={this.handleQueryOperatorChange}>
-            {Array(2).fill(null).map((_, type) =>
-              <option value={Operator[type]}>{translate.queryJa[type]}</option>
+            {Array(2).fill(null).map((_, index) =>
+              <option key={index} value={Operator[index]}>{translate.queryJa[index]}</option>
             )}
           </select>
-        )}
+        }
 
         <SelectableInput defaults={this.state.keywords}
                          options={this.props.suggestions}
+                         onSubmit={this.props.onSubmit}
                          onChange={this.handleKeywordChange}
                          onRemove={this.handleRemove}/>
 
         <select className="logical-operator"
                 value={this.state.keywordOperator}
+                onKeyUp={this.handleEnter}
                 onChange={this.handleKeywordOperatorChange}>
-          {Array(3).fill(null).map((_, type) =>
-            <option value={Operator[type]}>{translate.keysJa[type]}</option>
+          {Array(3).fill(null).map((_, index) =>
+            <option key={index} value={Operator[index]}>{translate.keysJa[index]}</option>
           )}
         </select>
+
+        {this.state.confirming && <div className="query-expression--confirm">
+          <button className="query-expression--confirm--remove"><i className="fa fa-trash-o"/></button>
+          <button className="query-expression--confirm--cancel"><i className="fa fa-recycle"/></button>
+        </div>}
       </li>
     )
   }

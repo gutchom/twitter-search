@@ -4,6 +4,7 @@ import Drawer from './Drawer'
 export interface SelectableInputProps {
   defaults?: string[]
   options: string[]
+  onSubmit(): void
   onChange(keywords: string[]): void
   onRemove(e: MouseEvent<HTMLButtonElement>): void
 }
@@ -17,6 +18,7 @@ export interface SelectableInputState {
 }
 
 export default class SelectableInput extends React.Component<SelectableInputProps, SelectableInputState> {
+  hasPressed = false
   input: HTMLInputElement
   drawer: HTMLUListElement
   state = {
@@ -56,11 +58,15 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     this.input.removeEventListener('click', this.handleInputClick)
   }
 
-  handleBodyClick() { this.setState({ isDrawerOpen: false }) }
+  handleBodyClick = () => {
+    this.setState({ isDrawerOpen: false })
+  }
 
-  handleInputClick(e: Event) { e.stopPropagation() }
+  handleInputClick = (e: Event) => {
+    e.stopPropagation()
+  }
 
-  handleChange(input: string) {
+  handleChange = (input: string) => {
     this.props.onChange(input.replace(/\s+/g, ' ').split(/\s/))
   }
 
@@ -92,6 +98,9 @@ export default class SelectableInput extends React.Component<SelectableInputProp
         break
 
       case 'Enter':
+        if (this.hasPressed) {
+          this.props.onSubmit()
+        }
         break
 
       case 'ArrowUp':
@@ -105,6 +114,8 @@ export default class SelectableInput extends React.Component<SelectableInputProp
       default:
         break
     }
+
+    this.hasPressed = false
   }
 
   handleSelect = (cursor: number) => {
@@ -114,26 +125,35 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     this.handleChange(input)
   }
 
+  inputRefs = (el: HTMLInputElement) => {
+    this.input = el
+  }
+
+  drawerRefs = (el: HTMLUListElement) => {
+    this.drawer = el
+  }
+
   render() {
     return (
       <div className="query-input">
-        <input className="textinput" placeholder="スペース区切りで複数入力可能"
+        <input className="textinput" placeholder="スペース区切りで複数入力"
                value={this.state.input}
                onChange={this.handleInputChange}
                onFocus={this.handleInputFocus}
                onBlur={this.handleInputBlur}
+               onKeyPress={() => this.hasPressed = true}
                onKeyUp={this.handleInputKeyUp}
-               ref={(el: HTMLInputElement) => this.input = el} />
+               ref={this.inputRefs} />
 
         <button className="query-input--remove" tabIndex={-1} onClick={this.props.onRemove}>
-          <i className="fa fa-times"/>
+          <i className="fa fa-trash-o"/>
         </button>
 
         <Drawer visible={this.state.isDrawerOpen}
                 options={[...this.props.options].reverse()}
                 chosen={this.state.cursor}
                 onChange={this.handleSelect}
-                ref={(el: HTMLUListElement) => this.drawer = el} />
+                refs={this.drawerRefs} />
       </div>
     )
   }

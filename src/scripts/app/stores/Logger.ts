@@ -16,6 +16,8 @@ export interface History<T> {
   readonly name: string
   readonly length: number
   readonly stamp: string
+  readonly canUndo: boolean
+  readonly canRedo: boolean
   readonly latest: T
   readonly oldest: T
   readonly all: T[]
@@ -68,31 +70,65 @@ export default class Logger<T> implements History<T> {
     }
   }
 
-  get name(): string { return this.key.slice(prefix.length) }
+  get name(): string {
+    return this.key.slice(prefix.length)
+  }
 
-  get length(): number { return this.history.length }
+  get length(): number {
+    return this.history.length
+  }
 
-  get stamp(): string { return this.current.stamp }
+  get stamp(): string {
+    return this.current.stamp
+  }
 
-  get latest(): T { return this.load(1) }
+  get canUndo(): boolean {
+    return this.length > 0 && this.depth < this.length
+  }
 
-  get oldest(): T { return this.load(this.length) }
+  get canRedo(): boolean {
+    return this.length > 0 && this.depth > 1
+  }
 
-  get all(): T[] { return this.history.map(log => JSON.parse(log.data)) }
+  get latest(): T {
+    return this.load(1)
+  }
 
-  get depth(): number { return this.length - this.cursor }
+  get oldest(): T {
+    return this.load(this.length)
+  }
 
-  set depth(next) { this.cursor = this.length - next }
+  get all(): T[] {
+    return this.history.map(log => JSON.parse(log.data))
+  }
 
-  private get current(): Log { return this.history[this.cursor] }
+  get depth(): number {
+    return this.length - this.cursor
+  }
 
-  private get cursor(): number { return this.position }
+  set depth(next) {
+    this.cursor = this.length - next
+  }
 
-  private set cursor(next) { this.position = next >= this.length ? this.length - 1 : next >= 0 ? next : 0 }
+  private get current(): Log {
+    return this.history[this.cursor]
+  }
 
-  undo(steps = 1): T { return this.load(this.depth += steps) }
+  private get cursor(): number {
+    return this.position
+  }
 
-  redo(steps = 1): T { return this.load(this.depth -= steps) }
+  private set cursor(next) {
+    this.position = next >= this.length ? this.length - 1 : next >= 0 ? next : 0
+  }
+
+  undo(steps = 1): T {
+    return this.load(this.depth += steps)
+  }
+
+  redo(steps = 1): T {
+    return this.load(this.depth -= steps)
+  }
 
   jump(stamp: string): boolean {
     const index = this.history.findIndex(log => log.stamp === stamp)
@@ -141,6 +177,7 @@ export default class Logger<T> implements History<T> {
 
     if (archive.version !== this.version || Date.now() - archive.timestamp > this.duration * 60 * 60 * 1000) {
       localStorage.removeItem(this.key)
+
       return false
     }
 
