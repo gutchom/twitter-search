@@ -8,14 +8,16 @@ Enzyme.configure({ adapter: new Adapter() })
 
 function handleChange(keywords: string[]): void {}
 function handleRemove(): void {}
+function handleSubmit(): void {}
 
 describe('SelectableInput.tsx', () => {
   it('has correct default text', () => {
     const defaults = ['foo', 'bar']
     const wrapper = mount(<SelectableInput defaults={defaults}
-                                             options={[]}
-                                             onChange={handleChange}
-                                             onRemove={handleRemove}/>)
+                                           options={[]}
+                                           onSubmit={handleSubmit}
+                                           onChange={handleChange}
+                                           onRemove={handleRemove}/>)
 
     assert.strictEqual(wrapper.state('input'), defaults.join(' '))
   })
