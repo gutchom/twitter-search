@@ -61,6 +61,10 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
     }
   }
 
+  handleCancelRemove = () => {
+    this.setState({ confirming: false })
+  }
+
   handleEnter = (e: KeyboardEvent<HTMLSelectElement>) => {
     if (e.key === 'Enter') { this.props.onSubmit() }
   }
@@ -68,9 +72,16 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
   render() {
     return (
       <li className="query-expression--term">
+        {this.state.confirming && (
+          <div className="query-expression--confirm" onClick={this.handleCancelRemove}>
+            <button className="query-expression--confirm--remove" onClick={this.handleRemove}>
+              <i className="fa fa-trash-o"/>
+            </button>
+          </div>
+        )}
+
         {this.props.position === 0 ||
-          <select className="logical-operator"
-                  value={this.state.queryOperator}
+          <select value={this.state.queryOperator}
                   onKeyUp={this.handleEnter}
                   onChange={this.handleQueryOperatorChange}>
             {Array(2).fill(null).map((_, index) =>
@@ -85,19 +96,13 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
                          onChange={this.handleKeywordChange}
                          onRemove={this.handleRemove}/>
 
-        <select className="logical-operator"
-                value={this.state.keywordOperator}
+        <select value={this.state.keywordOperator}
                 onKeyUp={this.handleEnter}
                 onChange={this.handleKeywordOperatorChange}>
           {Array(3).fill(null).map((_, index) =>
             <option key={index} value={Operator[index]}>{translate.keysJa[index]}</option>
           )}
         </select>
-
-        {this.state.confirming && <div className="query-expression--confirm">
-          <button className="query-expression--confirm--remove"><i className="fa fa-trash-o"/></button>
-          <button className="query-expression--confirm--cancel"><i className="fa fa-recycle"/></button>
-        </div>}
       </li>
     )
   }
