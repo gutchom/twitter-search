@@ -39,6 +39,20 @@ const test = combine(base)({
     'react/lib/ExecutionEnvironment': 'react',
     'react/lib/ReactContext': 'react',
   },
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({
+      mangle: false,
+      compress: true,
+      parallel: {
+        cache: true,
+        workers: 4
+      },
+      output: {
+        comments: true,
+        beautify: true,
+      },
+    }),
+  ],
   module: {
     rules: [
       {
@@ -89,15 +103,32 @@ const development = combine(common)({
     errorDetails: true,
     colors: true,
   },
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({
+      mangle: false,
+      compress: true,
+      parallel: {
+        cache: true,
+        workers: 4
+      },
+      output: {
+        comments: true,
+        beautify: true,
+      },
+    }),
+  ],
   watch: true,
 })
 
 const production = combine(common)({
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
-      mangle: false,
+      mangle: true,
       compress: true,
-      parallel: true,
+      parallel: {
+        cache: true,
+        workers: 4
+      },
       output: {
         comments: false,
         beautify: false,

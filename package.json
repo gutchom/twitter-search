@@ -50,12 +50,12 @@
     "url-search-params": "^0.10.0"
   },
   "devDependencies": {
-    "@types/enzyme": "^2.8.9",
+    "@types/enzyme": "^2.8.10",
     "@types/mocha": "^2.2.43",
-    "@types/node": "^8.0.31",
+    "@types/node": "^8.0.32",
     "@types/power-assert": "^1.4.29",
-    "@types/react": "^16.0.7",
-    "@types/react-dom": "^15.5.5",
+    "@types/react": "^16.0.8",
+    "@types/react-dom": "^16.0.0",
     "@types/sinon": "^2.3.5",
     "@types/tween.js": "16.6.1",
     "babel-core": "^6.26.0",
