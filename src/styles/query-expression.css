@@ -7,12 +7,69 @@
 
 .query-expression--term {
   border-bottom: 1px solid var(--color-gray);
-  margin: 6px;
+  margin: 0 6px;
   padding: 6px;
+  position: relative;
+  text-align: center;
 
   &:last-child {
     border: none;
     text-align: center;
+  }
+
+  & select {
+    -webkit-appearance: none;
+    background: #fff;
+    border: 3px solid var(--color-gray);
+    border-radius: var(--radius-small);
+    display: block;
+    height: 2em;
+    outline: none;
+    text-align: center;
+    transition: width var(--duration-middle);
+    width: auto;
+
+    &:first-child {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    &:last-child {
+      margin-left: auto;
+      margin-right: 0;
+    }
+
+    &:focus {
+      border-color: var(--color-select);
+      box-shadow: 0 0 3px 3px var(--color-select-shadow);
+      color: var(--color-select);
+    }
+  }
+
+  & .query-expression--confirm {
+    background: rgba(192, 192, 192, 0.72);
+    box-shadow: 0 0 12px 8px rgba(192, 192, 192, 0.72);
+    height: 90%;
+    margin: auto;
+    position: absolute;
+    width: 96%;
+    z-index: 200;
+
+    & .query-expression--confirm--remove {
+      background: var(--color-alert);
+      border-radius: 50%;
+      bottom: -50%;
+      color: #fff;
+      display: block;
+      font-size: 48px;
+      left: -50%;
+      height: 72px;
+      margin: auto;
+      position: absolute;
+      right: -50%;
+      top: -50%;
+      width: 72px;
+    }
   }
 }
 
@@ -21,69 +78,8 @@
   border-radius: 50%;
   display: inline-block;
   height: 2.4em;
-  margin: 0 6px 48px;
+  margin: 6px;
   width: 2.4em;
-
-  &:focus {
-    border-color: var(--color-select);
-    box-shadow: 0 0 3px 3px var(--color-select-shadow);
-    color: var(--color-select);
-  }
-}
-
-.query-expression--confirm {
-  background: rgba(0, 0, 0, 0.5);
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 200;
-
-  & button {
-    border-radius: 50%;
-    bottom: -50%;
-    color: #fff;
-    display: block;
-    font-size: 16px;
-    height: 48px;
-    margin: auto;
-    position: absolute;
-    top: -50%;
-    width: 48px;
-  }
-
-  & .query-expression--confirm--remove {
-    background: var(--color-alert);
-  }
-
-  & .query-expression--confirm--cancel {
-    background: var(--color-green);
-  }
-}
-
-.logical-operator {
-  -webkit-appearance: none;
-  background: #fff;
-  border: 3px solid var(--color-gray);
-  border-radius: var(--radius-small);
-  display: block;
-  height: 2em;
-  margin: 2px;
-  outline: none;
-  text-align: center;
-  transition: width var(--duration-middle);
-  width: auto;
-
-  &:first-child {
-    margin-left: 8px;
-    margin-right: auto;
-  }
-
-  &:last-child {
-    margin-left: auto;
-    margin-right: 8px;
-  }
 
   &:focus {
     border-color: var(--color-select);

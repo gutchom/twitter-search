@@ -4,7 +4,7 @@
   --color-select-bg: color(var(--color-select) alpha(-24%));
   --color-hover: #648dbd;
   --color-alert: #e56568;
-  --color-green: #65c16c;
+  --color-green: #4aad64;
   --color-gray: #ddd;
   --color-orange: #f3a35d;
   --color-orange-dark: color(var(--color-orange) blackness(7.5%));
