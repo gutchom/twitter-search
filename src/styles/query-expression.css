@@ -91,7 +91,6 @@
       color: var(--color-select);
     }
   }
-
 }
 
 .query-input {
@@ -179,6 +178,11 @@
       max-height: 10em;
     }
 
+    & .checkbox:checked ~ .query-input--option--container {
+      background: var(--color-select-bg);
+      color: #fff;
+    }
+
     & .query-input--option {
       border-top: 1px solid var(--color-gray);
       display: block;
@@ -186,27 +190,18 @@
       text-align: center;
       width: 100%;
 
-      & .query-input--option--body {
-        font-size: 1em;
-        transition: color var(--duration-quick);
-      }
-
       & .query-input--option--container {
         border-radius: 4px;
         box-sizing: border-box;
+        font-size: 1em;
         height: 100%;
         padding: 6px 0;
-        transition: background var(--duration-quick);
+        transition: var(--duration-quick);
         width: 100%;
 
         &:hover {
           border: 2px solid var(--color-hover);
           padding: 4px 0;
-        }
-
-        @nest .checkbox:checked ~ & {
-          background: var(--color-select-bg);
-          color: #fff;
         }
       }
     }
