@@ -4,7 +4,6 @@ import Drawer from './Drawer'
 export interface SelectableInputProps {
   defaults?: string[]
   options: string[]
-  onSubmit(): void
   onChange(keywords: string[]): void
   onRemove(e: MouseEvent<HTMLButtonElement>): void
 }
@@ -13,7 +12,6 @@ export interface SelectableInputState {
   cursor: number
   input: string
   inputOnFocus: string
-  inputOnBlur: string
   isDrawerOpen: boolean
 }
 
@@ -25,7 +23,6 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     cursor: 0,
     input: (this.props.defaults || []).join(' '),
     inputOnFocus: '',
-    inputOnBlur: '',
     isDrawerOpen: false,
   }
 
@@ -34,8 +31,8 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   set cursor(next: number) {
     const length = this.props.options.length
     const cursor = next > length ? length : next > 0 ? next : 0
+    const input = cursor > 0 ? this.props.options[length - cursor] : this.state.inputOnFocus
     const isDrawerOpen = length > 0 && cursor > 0
-    const input = isDrawerOpen ? this.props.options[length - cursor] : this.state.inputOnFocus
 
     if (isDrawerOpen) {
       const item = this.drawer.children[cursor - 1] as HTMLLIElement
@@ -67,7 +64,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleChange = (input: string) => {
-    this.props.onChange(input.replace(/\s+/g, ' ').split(/\s/))
+    this.props.onChange(input.replace(/(\s+|　)/g, ' ').split(/\s/))
   }
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,10 +81,11 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   handleInputBlur = (e: FocusEvent<HTMLInputElement>) => {
     const input = (e.target as HTMLInputElement).value
 
-    this.setState({ input, inputOnBlur: input, isDrawerOpen: false })
+    this.setState({ input, isDrawerOpen: false })
     this.handleChange(input)
   }
 
+  // FIXME カーソルキー使用時に例外が投げられる
   handleInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key.length === 1) { return }
 
@@ -99,7 +97,8 @@ export default class SelectableInput extends React.Component<SelectableInputProp
 
       case 'Enter':
         if (this.hasPressed) {
-          this.props.onSubmit()
+          this.handleChange(this.state.input)
+          this.input.blur()
         }
         break
 

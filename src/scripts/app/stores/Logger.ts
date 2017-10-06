@@ -6,7 +6,6 @@ export interface Log {
 }
 
 export interface Archive {
-  depth: number
   history: Log[]
   version: string
   timestamp: number
@@ -18,8 +17,6 @@ export interface History<T> {
   readonly stamp: string
   readonly canUndo: boolean
   readonly canRedo: boolean
-  readonly latest: T
-  readonly oldest: T
   readonly all: T[]
   depth: number
   jump(stamp: string): boolean
@@ -27,6 +24,7 @@ export interface History<T> {
   redo(steps: number): T
   load(depth: number): T
   save(data: T): this
+  empty(): void
   restore(): boolean
 }
 
@@ -79,7 +77,7 @@ export default class Logger<T> implements History<T> {
   }
 
   get stamp(): string {
-    return this.current.stamp
+    return this.history[this.cursor].stamp
   }
 
   get canUndo(): boolean {
@@ -88,14 +86,6 @@ export default class Logger<T> implements History<T> {
 
   get canRedo(): boolean {
     return this.length > 0 && this.depth > 1
-  }
-
-  get latest(): T {
-    return this.load(1)
-  }
-
-  get oldest(): T {
-    return this.load(this.length)
   }
 
   get all(): T[] {
@@ -108,10 +98,6 @@ export default class Logger<T> implements History<T> {
 
   set depth(next) {
     this.cursor = this.length - next
-  }
-
-  private get current(): Log {
-    return this.history[this.cursor]
   }
 
   private get cursor(): number {
@@ -136,27 +122,30 @@ export default class Logger<T> implements History<T> {
     return (index !== -1 && !!(this.cursor = index) || true)
   }
 
+  /**
+   * @param {number} depth - 1 <= depth <= this.length
+   * @returns {T}
+   */
   load(depth = this.depth): T {
     if (this.length === 0) {
       throw new Error(`Logger "${this.name}" has no history.`)
     } else {
-      return JSON.parse(this.history[this.length - (this.depth = depth)].data)
+      return JSON.parse(this.history[this.length - depth].data)
     }
   }
 
   save(data: T): this {
-    this.history = this.history
-      .slice(this.cursor - this.size, this.cursor + 1)
-      .concat({
-        data: JSON.stringify(data),
-        stamp: Date.now().toString(10) + this.history.length.toString(10),
-      })
+    this.history = this.history.concat({
+      data: JSON.stringify(data),
+      stamp: Date.now().toString(10) + this.history.length.toString(10),
+    })
 
     this.depth = 1
 
+    if (this.length > this.size) { this.history.slice(-this.size) }
+
     if (this.hasStorage) {
       localStorage.setItem(this.key, JSON.stringify({
-        depth: this.depth,
         history: this.history,
         version: this.version,
         timestamp: Date.now(),
@@ -164,6 +153,11 @@ export default class Logger<T> implements History<T> {
     }
 
     return this
+  }
+
+  empty(): void {
+    this.history = []
+    this.position = 0
   }
 
   restore(): boolean {
@@ -181,8 +175,7 @@ export default class Logger<T> implements History<T> {
       return false
     }
 
-    this.depth = archive.depth
-    this.history = archive.history.slice(this.cursor - this.size, archive.history.length)
+    this.history = archive.history.slice(-this.size)
 
     return true
   }

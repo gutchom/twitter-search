@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react'
+import React, { ChangeEvent } from 'react'
 import SelectableInput from 'app/components/SelectableInput'
 
 export type QueryOperator = 'AND' | 'OR'
@@ -23,7 +23,6 @@ export interface QueryTermProps {
   position: number
   defaults: QueryCondition
   suggestions: string[]
-  onSubmit(): void
   onChange(position: number, condition: Partial<QueryCondition>): void
   onRemove(position: number): void
 }
@@ -65,10 +64,6 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
     this.setState({ confirming: false })
   }
 
-  handleEnter = (e: KeyboardEvent<HTMLSelectElement>) => {
-    if (e.key === 'Enter') { this.props.onSubmit() }
-  }
-
   render() {
     return (
       <li className="query-expression--term">
@@ -82,7 +77,6 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
 
         {this.props.position === 0 ||
           <select value={this.state.queryOperator}
-                  onKeyUp={this.handleEnter}
                   onChange={this.handleQueryOperatorChange}>
             {Array(2).fill(null).map((_, index) =>
               <option key={index} value={Operator[index]}>{translate.queryJa[index]}</option>
@@ -92,12 +86,10 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
 
         <SelectableInput defaults={this.state.keywords}
                          options={this.props.suggestions}
-                         onSubmit={this.props.onSubmit}
                          onChange={this.handleKeywordChange}
                          onRemove={this.handleRemove}/>
 
         <select value={this.state.keywordOperator}
-                onKeyUp={this.handleEnter}
                 onChange={this.handleKeywordOperatorChange}>
           {Array(3).fill(null).map((_, index) =>
             <option key={index} value={Operator[index]}>{translate.keysJa[index]}</option>

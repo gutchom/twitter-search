@@ -2,14 +2,14 @@ import React from 'react'
 import Condition from './Condition'
 import { QueryCondition } from './QueryTerm'
 
-export interface HistoryItemProps {
+export interface RevertItemProps {
   checked: boolean
   position: number[]
   condition: QueryCondition
-  onChange(index: number[]): void
+  onChange(position: number[]): void
 }
 
-const HistoryItem: React.SFC<HistoryItemProps> = props => {
+const RevertItem: React.SFC<RevertItemProps> = props => {
   function handleClick() {
     props.onChange(props.position)
   }
@@ -22,12 +22,10 @@ const HistoryItem: React.SFC<HistoryItemProps> = props => {
                tabIndex={-1}
                checked={props.checked}
                onChange={handleClick}/>
-        <Condition keywords={props.condition.keywords}
-                   queryOperator={props.condition.queryOperator}
-                   keywordOperator={props.condition.keywordOperator} />
+        <Condition {...props.condition} />
       </label>
     </li>
   )
 }
 
-export default HistoryItem
+export default RevertItem

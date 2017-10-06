@@ -11,7 +11,7 @@ function handleCancel() { isOpen = false }
 
 describe('Modal.tsx', function () {
   it('has children component', function () {
-    const wrapper = mount(<Modal isOpen={isOpen} onCancel={handleCancel}><p>Sample text.</p><p>Sample text.</p></Modal>)
+    const wrapper = mount(<Modal isOpen={isOpen} onClose={handleCancel}><p>Sample text.</p><p>Sample text.</p></Modal>)
 
     assert.strictEqual(wrapper.find('p').length, 2)
   })
@@ -19,7 +19,7 @@ describe('Modal.tsx', function () {
   it('has header component', function () {
     const wrapper = mount(
       <Modal isOpen={isOpen}
-             onCancel={handleCancel}
+             onClose={handleCancel}
              header={<span>header</span>}>
         <p>Sample text.</p></Modal>)
 
@@ -29,7 +29,7 @@ describe('Modal.tsx', function () {
   it('has footer component', function () {
     const wrapper = mount(
       <Modal isOpen={isOpen}
-             onCancel={handleCancel}
+             onClose={handleCancel}
              footer={<span>footer</span>}>
         <p>Sample text.</p></Modal>)
 

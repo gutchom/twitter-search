@@ -1,8 +1,7 @@
 import React from 'react'
 import Logger from 'app/stores/Logger'
-import Modal from 'app/components/Modal'
 import QueryTerm, { QueryCondition } from './QueryTerm'
-import History from './History'
+import Revert from './Revert'
 
 const defaultCondition: QueryCondition = {
   queryOperator: 'AND',
@@ -10,31 +9,35 @@ const defaultCondition: QueryCondition = {
   keywords: [],
 }
 
+interface Query extends QueryCondition {
+  id: number
+}
+
 export interface QueryExpressionState {
-  query: QueryCondition[]
-  chosenPosition: number[][]
+  query: Query[]
+  suggestions: string[]
   isHistoryOpen: boolean
 }
 
 export default class QueryExpression extends React.Component<{}, QueryExpressionState> {
-  queryLogger = new Logger<QueryCondition[]>('query-expression-keyword', '0.1', { size: 10 })
-  chosenLogger = new Logger<number[]>('query-expression-selection', '0.1', { duration: 0 })
+  logger = new Logger<QueryCondition[]>('query', '1.0', { size: 10 })
+  queryId = 0
 
   state = {
-    query: [defaultCondition],
-    chosenPosition: ([] as number[][]),
+    query: [{ id: 0, ...defaultCondition }],
+    suggestions: this.suggestions,
     isHistoryOpen: false,
   }
 
   constructor(props: {}) {
     super(props)
 
-    this.queryLogger.restore()
+    this.logger.restore()
   }
 
   get suggestions(): string[] {
-    return this.queryLogger.length > 0
-      ? this.queryLogger.all
+    return this.logger.length > 0
+      ? this.logger.all
         .reduce((pre: string[], nex) => pre.concat(nex.map(({ keywords }) => keywords.join(' '))), [])
         .filter(keywords => keywords.length > 0)
         .unique()
@@ -42,78 +45,51 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   }
 
   handleQueryChange = (position: number, next: Partial<QueryCondition>) => {
-    this.setState({
-      query: this.state.query.map((old, index) => index === position ? { ...old, ...next } : old),
-    })
+    this.setState({ query: this.state.query.map((old, index) => index === position ? { ...old, ...next } : old) })
   }
 
   handleQueryRemove = (position: number) => {
-    this.setState({
-      query: this.state.query.filter((_, index) => index !== position),
-    })
+    this.setState({ query: this.state.query.filter((_, index) => index !== position) })
   }
 
   handleAddClick = () => {
-    this.setState({
-      query: this.state.query.concat(defaultCondition),
-    })
+    this.setState({ query: this.state.query.concat({ id: ++this.queryId, ...defaultCondition }) })
   }
 
   handleSearchClick = () => {
-    this.queryLogger.save(this.state.query)
-    this.forceUpdate()
+    this.logger.save(this.state.query.filter(({ keywords }) => keywords.length > 0))
+    this.setState({ suggestions: this.suggestions })
   }
 
-  handleHistoryClick = () => {
+  handleRevertClick = () => {
     this.setState({ isHistoryOpen: true })
   }
 
-  handleModaleCancel = () => {
+  handleRevertCancel = () => {
     this.setState({ isHistoryOpen: false })
   }
 
-  handleHistorySelect = (position: number[]) => {
-    const latest = this.state.chosenPosition.filter(chosen => !(position[0] === chosen[0] && position[1] === chosen[1]))
-
-    this.chosenLogger.save(position)
-
+  handleRevertSubmit = (query: QueryCondition[]) => {
     this.setState({
-      chosenPosition: latest.length < this.state.chosenPosition.length ? latest : latest.concat([position]),
+      query: query.map(condition => ({ ...condition, id: ++this.queryId })),
+      isHistoryOpen: false,
     })
-  }
-
-  handleUndo = () => {
-    if (this.chosenLogger.canUndo) {
-      this.chosenLogger.undo()
-      this.setState({ chosenPosition: this.state.chosenPosition.slice(0, this.state.chosenPosition.length - 1) })
-    }
-  }
-
-  handleRedo = () => {
-    if (this.chosenLogger.canRedo) {
-      this.setState({ chosenPosition: this.state.chosenPosition.concat([this.chosenLogger.redo()]) })
-    }
-  }
-
-  handleRevertSubmit = () => {
-
   }
 
   render() {
     return (
       <ul className="query-expression">
         {...this.state.query.map((condition, index) =>
-          <QueryTerm key={index}
+          <QueryTerm key={condition.id}
                      position={index}
                      defaults={condition}
                      suggestions={this.suggestions}
-                     onSubmit={this.handleAddClick}
                      onChange={this.handleQueryChange}
                      onRemove={this.handleQueryRemove} />
         )}
 
-        <li className="query-expression--term">
-          <button className="query-expression--button" onClick={this.handleHistoryClick}>
+        <li className="query-expression--dashboard">
+          <button className="query-expression--button" onClick={this.handleRevertClick}>
             <i className="fa fa-clock-o"/>
           </button>
           <button className="query-expression--button" onClick={this.handleAddClick}>
@@ -125,24 +101,10 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
         </li>
 
         <li>
-          <Modal isOpen={this.state.isHistoryOpen}
-                 onCancel={this.handleModaleCancel}
-                 header={<h1><i className="fa fa-clock-o"/>履歴</h1>}
-                 footer={
-                   <div>
-                     <button className={this.chosenLogger.canUndo ? 'enable' : ''} onClick={this.handleUndo}>
-                       <i className="fa fa-undo"/>
-                     </button>
-                     <button className={this.chosenLogger.canRedo ? 'enable' : ''} onClick={this.handleRedo}>
-                       <i className="fa fa-repeat"/>
-                     </button>
-                     <button className="submit" onClick={this.handleRevertSubmit}>決定</button>
-                   </div>
-                 }>
-            <History history={this.queryLogger.all}
-                     chosen={this.state.chosenPosition}
-                     onSelect={this.handleHistorySelect}/>
-          </Modal>
+          <Revert history={this.logger.all.reverse()}
+                  isOpen={this.state.isHistoryOpen}
+                  onCancel={this.handleRevertCancel}
+                  onSubmit={this.handleRevertSubmit}/>
         </li>
       </ul>
     )

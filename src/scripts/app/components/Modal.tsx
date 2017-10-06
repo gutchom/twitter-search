@@ -5,7 +5,7 @@ export interface ModalProps {
   header?: ReactNode
   footer?: ReactNode
   isOpen: boolean
-  onCancel(e: MouseEvent<HTMLButtonElement>): void
+  onClose(e: MouseEvent<HTMLButtonElement>): void
 }
 
 export default class Modal extends React.Component<ModalProps, {}> {
@@ -68,7 +68,7 @@ export default class Modal extends React.Component<ModalProps, {}> {
 
   handleCloseClick = (e: MouseEvent<HTMLButtonElement>) => {
     scrollTo(0, this.rootScrollPosition)
-    this.props.onCancel(e)
+    this.props.onClose(e)
   }
 
   ref = (el: HTMLDivElement) => {
