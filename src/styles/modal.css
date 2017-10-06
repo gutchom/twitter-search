@@ -13,24 +13,23 @@
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: 9999;
 
   &.visible {
     display: block;
   }
 
   & .modal--close {
-    background: #222;
-    border: 1px solid #fff;
+    background: #444;
     border-radius: 50%;
     color: #fff;
     cursor: pointer;
     font-size: 18px;
     height: 7.5vw;
     position: fixed;
-    right: 0;
+    right: 4px;
     text-align: center;
-    top: 0;
+    top: 4px;
     width: 7.5vw;
     z-index: 1150;
   }

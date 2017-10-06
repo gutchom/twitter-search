@@ -10,7 +10,6 @@
   margin: 0 6px;
   padding: 6px;
   position: relative;
-  text-align: center;
 
   &:last-child {
     border: none;
@@ -48,6 +47,7 @@
 
   & .query-expression--confirm {
     background: rgba(192, 192, 192, 0.72);
+    border-radius: var(--radius);
     box-shadow: 0 0 12px 8px rgba(192, 192, 192, 0.72);
     height: 90%;
     margin: auto;
@@ -62,8 +62,8 @@
       color: #fff;
       display: block;
       font-size: 48px;
-      left: -50%;
       height: 72px;
+      left: -50%;
       margin: auto;
       position: absolute;
       right: -50%;
@@ -73,19 +73,25 @@
   }
 }
 
-.query-expression--button {
-  border: 3px solid var(--color-gray);
-  border-radius: 50%;
-  display: inline-block;
-  height: 2.4em;
-  margin: 6px;
-  width: 2.4em;
+.query-expression--dashboard {
+  padding: 8px 0 36px;
+  text-align: center;
 
-  &:focus {
-    border-color: var(--color-select);
-    box-shadow: 0 0 3px 3px var(--color-select-shadow);
-    color: var(--color-select);
+  & .query-expression--button {
+    border: 3px solid var(--color-gray);
+    border-radius: 50%;
+    display: inline-block;
+    height: 2.4em;
+    margin: 6px;
+    width: 2.4em;
+
+    &:focus {
+      border-color: var(--color-select);
+      box-shadow: 0 0 3px 3px var(--color-select-shadow);
+      color: var(--color-select);
+    }
   }
+
 }
 
 .query-input {
@@ -94,10 +100,10 @@
   text-align: center;
 
   & .query-input--remove {
-    border: 3px solid var(--color-alert);
+    border: 3px solid var(--color-gray);
     border-radius: 50%;
     bottom: -50%;
-    color: var(--color-alert);
+    color: var(--color-gray);
     display: inline-block;
     font-size: 16px;
     height: 28px;
@@ -109,7 +115,9 @@
     width: 28px;
 
     &:focus {
-      box-shadow: 0 0 3px 3px var(--color-alert);
+      border-color: var(--color-select);
+      box-shadow: 0 0 3px 3px var(--color-select-shadow);
+      color: var(--color-select);
     }
   }
 
@@ -158,6 +166,7 @@
     max-height: 0;
     max-width: calc(var(--query-input-width) * 0.46);
     min-width: calc(var(--query-input-width) * 0.24);
+    -webkit-overflow-scrolling: touch;
     overflow-y: scroll;
     padding: 0;
     position: absolute;
@@ -230,11 +239,15 @@
       }
 
       &.submit {
-        background: var(--color-orange);
+        background: var(--color-gray);
         border-radius: 16px;
         color: #fff;
         display: block;
         float: right;
+
+        &.enable {
+          background: var(--color-orange);
+        }
       }
     }
   }

@@ -19,6 +19,7 @@ h6 {
 
 ul {
   list-style: none;
+  margin: 0;
   padding-left: 0;
 }
 
@@ -36,12 +37,15 @@ button {
   display: none;
 }
 
-header {
-  background: var(--color-green);
-  color: #fff;
-  padding: 6px;
+.app {
+  & > header {
+    background: #39c9d8;
+    color: #fff;
+    padding: 8px;
+    z-index: 8000;
 
-  & h1 {
-    margin: 0;
+    & h1 {
+      margin: 0;
+    }
   }
 }
