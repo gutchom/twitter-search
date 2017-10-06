@@ -60,6 +60,7 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
       .map(pos => this.props.history[pos[0]][pos[1]])
 
     this.props.onSubmit(query)
+    this.logger.empty().save([[]])
     this.setState({ positions: [[]] })
   }
 

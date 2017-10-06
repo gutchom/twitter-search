@@ -6,6 +6,7 @@ export interface Log {
 }
 
 export interface Archive {
+  depth: number
   history: Log[]
   version: string
   timestamp: number
@@ -24,7 +25,7 @@ export interface History<T> {
   redo(steps: number): T
   load(depth: number): T
   save(data: T): this
-  empty(): void
+  empty(): this
   restore(): boolean
 }
 
@@ -135,17 +136,18 @@ export default class Logger<T> implements History<T> {
   }
 
   save(data: T): this {
-    this.history = this.history.concat({
-      data: JSON.stringify(data),
-      stamp: Date.now().toString(10) + this.history.length.toString(10),
-    })
+    this.history = this.history
+      .slice(-this.size - this.depth, this.cursor + 1)
+      .concat({
+        data: JSON.stringify(data),
+        stamp: Date.now().toString(10) + this.history.length.toString(10),
+      })
 
     this.depth = 1
 
-    if (this.length > this.size) { this.history.slice(-this.size) }
-
     if (this.hasStorage) {
       localStorage.setItem(this.key, JSON.stringify({
+        depth: this.depth,
         history: this.history,
         version: this.version,
         timestamp: Date.now(),
@@ -155,9 +157,11 @@ export default class Logger<T> implements History<T> {
     return this
   }
 
-  empty(): void {
+  empty(): this {
     this.history = []
     this.position = 0
+
+    return this
   }
 
   restore(): boolean {
@@ -176,6 +180,7 @@ export default class Logger<T> implements History<T> {
     }
 
     this.history = archive.history.slice(-this.size)
+    this.depth = archive.depth
 
     return true
   }

@@ -57,8 +57,11 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   }
 
   handleSearchClick = () => {
-    this.logger.save(this.state.query.filter(({ keywords }) => keywords.length > 0))
-    this.setState({ suggestions: this.suggestions })
+    const query = this.state.query.filter(({ keywords }) => keywords.length > 0)
+    if (query.length > 0) {
+      this.logger.save(query)
+      this.setState({ suggestions: this.suggestions })
+    }
   }
 
   handleRevertClick = () => {

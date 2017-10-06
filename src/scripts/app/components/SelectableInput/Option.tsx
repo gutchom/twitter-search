@@ -8,9 +8,7 @@ export interface OptionProps {
 }
 
 const Option: React.SFC<OptionProps> = props => {
-  if (props.checked) { props.onChange(props.position) }
-
-  function handleClick() {
+  function handleChange() {
     props.onChange(props.position)
   }
 
@@ -22,7 +20,8 @@ const Option: React.SFC<OptionProps> = props => {
                tabIndex={-1}
                checked={props.checked}
                value={props.position}
-               onClick={handleClick} />
+               onChange={handleChange}
+               onClick={handleChange} />
         <div className="query-input--option--container">
           <span className="query-input--option--body">{props.option}</span>
         </div>

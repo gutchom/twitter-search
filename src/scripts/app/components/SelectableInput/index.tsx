@@ -85,7 +85,6 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     this.handleChange(input)
   }
 
-  // FIXME カーソルキー使用時に例外が投げられる
   handleInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key.length === 1) { return }
 
@@ -120,7 +119,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   handleSelect = (cursor: number) => {
     const input = this.props.options[this.props.options.length - cursor]
 
-    this.setState({ input, isDrawerOpen: false })
+    this.setState({ cursor, input, isDrawerOpen: false })
     this.handleChange(input)
   }
 
