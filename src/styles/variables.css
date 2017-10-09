@@ -14,13 +14,13 @@
   --radius-middle: calc(var(--radius) * 1);
   --radius-large: calc(var(--radius) * 1.5);
   --radius-huge: calc(var(--radius) * 2);
-  --duration: 0.3s;
+  --duration: 0.2s;
   --duration-quick: calc(var(--duration) * 0.5);
   --duration-middle: calc(var(--duration) * 1);
   --duration-slow: calc(var(--duration) * 2);
 }
 
-@custom-media --screen-phone (width <= 640px);
-@custom-media --screen-tablet (width > 640px);
-@custom-media --screen-laptop (width > 960px);
+@custom-media --screen-mobile (width <= 480px);
+@custom-media --screen-tablet (width >= 960px);
+@custom-media --screen-laptop (width >= 1024px);
 @custom-media --screen-desktop (width > 1200px);

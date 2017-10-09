@@ -4,6 +4,7 @@
 
 html,
 body {
+  color: #555;
   font-family: "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", メイリオ, Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
   height: 100%;
 }
@@ -14,6 +15,7 @@ h3,
 h4,
 h5,
 h6 {
+  color: #fff;
   letter-spacing: 0.075em;
 }
 
