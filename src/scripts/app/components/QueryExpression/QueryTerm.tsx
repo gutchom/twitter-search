@@ -20,6 +20,7 @@ export interface QueryCondition {
 }
 
 export interface QueryTermProps {
+  focus: boolean
   position: number
   defaults: QueryCondition
   suggestions: string[]
@@ -87,6 +88,7 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
         </button>
 
         <SelectableInput defaults={this.state.keywords}
+                         focus={this.props.focus}
                          options={this.props.suggestions}
                          onChange={this.handleKeywordChange}/>
 

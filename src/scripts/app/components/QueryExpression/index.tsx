@@ -11,6 +11,7 @@ const defaultCondition: QueryCondition = {
 
 interface Query extends QueryCondition {
   id: number
+  focus: boolean
 }
 
 export interface QueryExpressionState {
@@ -23,16 +24,16 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   logger = new Logger<QueryCondition[]>('query', '1.0', { size: 10 })
   queryId = 0
 
-  state = {
-    query: [{ id: 0, ...defaultCondition }],
-    suggestions: this.suggestions,
-    isHistoryOpen: false,
-  }
-
   constructor(props: {}) {
     super(props)
 
     this.logger.restore()
+
+    this.state = {
+      query: [{ ...defaultCondition, id: 0, focus: false }],
+      suggestions: this.suggestions,
+      isHistoryOpen: false,
+    }
   }
 
   get suggestions(): string[] {
@@ -53,7 +54,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   }
 
   handleAddClick = () => {
-    this.setState({ query: this.state.query.concat({ id: ++this.queryId, ...defaultCondition }) })
+    this.setState({ query: this.state.query.concat({ ...defaultCondition, id: ++this.queryId, focus: true }) })
   }
 
   handleSearchClick = () => {
@@ -74,7 +75,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
 
   handleRevertSubmit = (query: QueryCondition[]) => {
     this.setState({
-      query: query.map(condition => ({ ...condition, id: ++this.queryId })),
+      query: query.map(condition => ({ ...condition, id: ++this.queryId, focus: false })),
       isHistoryOpen: false,
     })
   }
@@ -84,13 +85,13 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
       <ul className="query-expression">
         {...this.state.query.map((condition, index) =>
           <QueryTerm key={condition.id}
+                     focus={condition.focus}
                      position={index}
                      defaults={condition}
-                     suggestions={this.suggestions}
+                     suggestions={this.state.suggestions}
                      onChange={this.handleQueryChange}
                      onRemove={this.handleQueryRemove} />
         )}
-
         <li className="query-expression--dashboard">
           <button className="query-expression--button" onClick={this.handleRevertClick}>
             <i className="fa fa-clock-o"/>
@@ -101,9 +102,6 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
           <button className="query-expression--button" onClick={this.handleSearchClick}>
             <i className="fa fa-search"/>
           </button>
-        </li>
-
-        <li>
           <Revert history={this.logger.all.reverse()}
                   visible={this.state.isHistoryOpen}
                   onCancel={this.handleRevertCancel}

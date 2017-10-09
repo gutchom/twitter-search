@@ -3,6 +3,7 @@ import Drawer from './Drawer'
 
 export interface SelectableInputProps {
   defaults?: string[]
+  focus: boolean
   options: string[]
   onChange(keywords: string[]): void
 }
@@ -47,6 +48,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   componentDidMount() {
     document.body.addEventListener('click', this.handleBodyClick, false)
     this.input.addEventListener('click', this.handleInputClick, false)
+    this.props.focus && this.input.focus()
   }
 
   componentWillUnmount() {
