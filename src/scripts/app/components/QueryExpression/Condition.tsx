@@ -5,7 +5,7 @@ const Condition: React.SFC<QueryCondition> = props => {
   return (
     <div className="condition">
       <p className="condition--keywords">{props.keywords.join(' ')}</p>
-      <p className="condition--operator">{translate.keysJa[Operator[props.keywordOperator]]}</p>
+      <p className="condition--operator">{translate.keysJa[Operator[props.operator]]}</p>
     </div>
   )
 }

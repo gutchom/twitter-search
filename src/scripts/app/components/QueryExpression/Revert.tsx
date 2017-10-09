@@ -17,7 +17,7 @@ export interface HistoryState {
 }
 
 export default class Revert extends React.Component<HistoryProps, HistoryState> {
-  logger = new Logger<number[][]>('history-selected', '1.0', { duration: 0 })
+  logger = new Logger<number[][]>('revert-selected', '1.0', { duration: 0 })
   positions: number[][]
 
   state = {
@@ -47,7 +47,7 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
   componentWillReceiveProps(nextProps: HistoryProps) {
     if (nextProps.visible && !this.props.visible) {
       this.logger.empty().save([[]])
-      this.setState({ selected: [[]]})
+      this.setState({ cursor: -1, selected: [[]]})
       document.addEventListener('keydown', this.handleKeyDown)
     }
     if (!nextProps.visible && this.props.visible) {
@@ -59,7 +59,6 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
   }
 
   handleKeyDown = (e: KeyboardEvent) => {
-    console.log(e.keyCode)
     switch (e.keyCode) {
       case 13: // Enter
         this.handleSubmit()
@@ -122,9 +121,9 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
         .sort((a, b) => a[0] - b[0])
         .map(pos => this.props.history[pos[0]][pos[1]])
 
-      this.props.onSubmit(query)
+      this.setState({ cursor: -1, selected: [[]] })
       this.logger.empty().save([[]])
-      this.setState({ selected: [[]] })
+      this.props.onSubmit(query)
     }
   }
 

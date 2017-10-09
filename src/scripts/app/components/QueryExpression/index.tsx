@@ -4,8 +4,7 @@ import QueryTerm, { QueryCondition } from './QueryTerm'
 import Revert from './Revert'
 
 const defaultCondition: QueryCondition = {
-  queryOperator: 'AND',
-  keywordOperator: 'OR',
+  operator: 'OR',
   keywords: [],
 }
 
@@ -21,7 +20,7 @@ export interface QueryExpressionState {
 }
 
 export default class QueryExpression extends React.Component<{}, QueryExpressionState> {
-  logger = new Logger<QueryCondition[]>('query', '1.0', { size: 10 })
+  logger = new Logger<QueryCondition[]>('query', '1.5', { size: 10 })
   queryId = 0
 
   constructor(props: {}) {
@@ -39,9 +38,10 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   get suggestions(): string[] {
     return this.logger.length > 0
       ? this.logger.all
-        .reduce((pre: string[], nex) => pre.concat(nex.map(({ keywords }) => keywords.join(' '))), [])
+        .reduce((pre: string[], nex) => pre.concat(...nex.map(({ keywords }) => keywords)), [])
         .filter(keywords => keywords.length > 0)
         .unique()
+        .slice(-20)
       : []
   }
 
@@ -58,7 +58,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   }
 
   handleSearchClick = () => {
-    const query = this.state.query.filter(({ keywords }) => keywords.length > 0)
+    const query = this.state.query.filter(({ keywords }) => keywords.filter(phrase => phrase.length > 0).length > 0)
     if (query.length > 0) {
       this.logger.save(query)
       this.setState({ suggestions: this.suggestions })

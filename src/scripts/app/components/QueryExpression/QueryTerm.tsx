@@ -15,8 +15,7 @@ export const translate = {
 
 export interface QueryCondition {
   keywords: string[]
-  queryOperator: QueryOperator
-  keywordOperator: LogicalOperator
+  operator: LogicalOperator
 }
 
 export interface QueryTermProps {
@@ -44,8 +43,8 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
   }
 
   handleKeywordOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.setState({ keywordOperator: e.target.value as LogicalOperator })
-    this.props.onChange(this.props.position, { keywordOperator: e.target.value as LogicalOperator })
+    this.setState({ operator: e.target.value as LogicalOperator })
+    this.props.onChange(this.props.position, { operator: e.target.value as LogicalOperator })
   }
 
   handleRemove = () => {
@@ -79,7 +78,7 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
                          options={this.props.suggestions}
                          onChange={this.handleKeywordChange}/>
 
-        <select value={this.state.keywordOperator}
+        <select value={this.state.operator}
                 onChange={this.handleKeywordOperatorChange}>
           {Array(3).fill(null).map((_, index) =>
             <option key={index} value={Operator[index]}>{translate.keysJa[index]}</option>
