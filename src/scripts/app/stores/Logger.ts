@@ -90,7 +90,7 @@ export default class Logger<T> implements History<T> {
   }
 
   get all(): T[] {
-    return this.history.map(log => JSON.parse(log.data))
+    return this.length > 0 ? this.history.map(log => JSON.parse(log.data)) : []
   }
 
   get depth(): number {
