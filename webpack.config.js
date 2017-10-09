@@ -78,7 +78,7 @@ const common = combine(base)({
   },
   output: {
     filename: '[name].js',
-    path: resolve(__dirname, 'public/assets/js'),
+    path: resolve(__dirname, 'public/js'),
   },
   module: {
     rules: [
