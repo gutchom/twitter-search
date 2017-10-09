@@ -10,7 +10,7 @@ export enum Operator { AND, OR, NOR }
 export const translate = {
   sign: ['+', '?', '-'],
   queryJa: ['なおかつ', 'もしくは'],
-  keysJa: ['の全てを含む', 'のどれかを含む', 'のどれも含まない'],
+  keysJa: ['を全て含む', 'のどれかを含む', 'を全て含まない'],
 }
 
 export interface QueryCondition {
