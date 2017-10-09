@@ -3,6 +3,7 @@ import React from 'react'
 export interface OptionProps {
   text: string
   checked: boolean
+  focusing: boolean
   position: number
   onClick(cursor: number): void
 }
@@ -20,7 +21,7 @@ const Option: React.SFC<OptionProps> = props => {
                tabIndex={-1}
                checked={props.checked}
                onClick={handleClick} />
-        <div className="query-input--option--container">{props.text}</div>
+        <div className={`query-input--option--container ${props.focusing ? 'focusing' : ''}`}>{props.text}</div>
       </label>
     </li>
   )

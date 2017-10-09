@@ -12,8 +12,6 @@ export interface SelectableInputState {
   isDrawerOpen: boolean
   cursor: number
   input: string
-  cursorOnFocus: number
-  inputOnFocus: string
 }
 
 export default class SelectableInput extends React.Component<SelectableInputProps, SelectableInputState> {
@@ -24,8 +22,6 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     isDrawerOpen: false,
     cursor: 0,
     input: (this.props.defaults || []).join(' '),
-    cursorOnFocus: 0,
-    inputOnFocus: (this.props.defaults || []).join(' '),
   }
 
   get cursor(): number { return this.state.cursor }
@@ -33,7 +29,6 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   set cursor(next: number) {
     const length = this.props.options.length
     const cursor = next > length ? length : next > 0 ? next : 0
-    const input = cursor > 0 ? this.props.options[length - cursor] : this.state.inputOnFocus
 
     if (length > 0 && cursor > 1) {
       const item = this.drawer.children[cursor - 1] as HTMLLIElement
@@ -42,7 +37,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
       this.drawer.scrollTo(0, 0)
     }
 
-    this.handleSubmit(input, cursor, length > 0 && cursor > 0)
+    this.setState({ cursor, isDrawerOpen: length > 0 && cursor > 0 })
   }
 
   componentDidMount() {
@@ -63,23 +58,23 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     e.stopPropagation()
   }
 
-  handleSubmit = (input: string, cursor = this.cursor, isDrawerOpen = false) => {
+  handleSubmit = (input = this.state.input, cursor = this.cursor, isDrawerOpen = false) => {
+    input = input.replace(/^[\s　]*(.*)[\s　]*$/, '$1').replace(/[\s　]+/g, ' ')
     this.setState({ input, cursor, isDrawerOpen })
-    this.props.onChange(input.replace(/(\s+|　)/g, ' ').split(/\s/))
+    this.props.onChange(input.split(' '))
   }
 
   handleInputFocus = (e: FocusEvent<HTMLInputElement>) => {
     document.body.addEventListener('click', this.handleBodyClick)
     this.setState({
       isDrawerOpen: true,
-      cursorOnFocus: this.cursor,
-      inputOnFocus: e.currentTarget.value,
+      input: e.currentTarget.value,
     })
   }
 
-  handleInputBlur = (e: FocusEvent<HTMLInputElement>) => {
+  handleInputBlur = () => {
     document.body.removeEventListener('click', this.handleBodyClick)
-    setTimeout(() => this.setState({ isDrawerOpen: false }), 100)
+    this.handleSubmit()
   }
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -95,13 +90,14 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     if (!this.kanaInput) {
       switch (e.keyCode) {
         case 13: // Enter
-          this.input.blur()
-          this.handleSubmit(this.input.value)
-          break
-
         case 27: // Escape
           this.input.blur()
-          this.handleSubmit(this.state.inputOnFocus, this.state.cursorOnFocus)
+          break
+
+        case 32: // Space
+          if (this.cursor > 0) {
+            this.handleDrawerClick(this.cursor)
+          }
           break
 
         case 38: // ArrowUp
@@ -119,7 +115,17 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleDrawerClick = (cursor: number) => {
-    this.handleSubmit(this.props.options[this.props.options.length - cursor], cursor)
+    this.input.focus()
+    const restored = this.props.options[this.props.options.length - cursor]
+    const filtered = this.state.input.split(' ').filter(word => word !== restored)
+
+    this.setState({
+      cursor,
+      input: (filtered.length < this.state.input.split(' ').length
+        ? filtered.join(' ')
+        : filtered.concat(restored).join(' ')
+      ) + ' ',
+    })
   }
 
   inputRefs = (el: HTMLInputElement) => {
@@ -144,7 +150,8 @@ export default class SelectableInput extends React.Component<SelectableInputProp
         <Drawer refs={this.drawerRefs}
                 visible={this.state.isDrawerOpen}
                 options={[...this.props.options].reverse()}
-                chosen={this.state.cursor}
+                selected={this.state.input.split(' ')}
+                focusing={this.state.cursor}
                 onClick={this.handleDrawerClick} />
       </div>
     )

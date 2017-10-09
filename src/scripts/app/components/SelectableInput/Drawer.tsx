@@ -4,7 +4,8 @@ import Option from './Option'
 export interface DrawerProps {
   visible: boolean
   options: string[]
-  chosen: number
+  focusing: number
+  selected: string[]
   refs(el: HTMLUListElement): void
   onClick(cursor: number): void
 }
@@ -15,7 +16,8 @@ const Drawer: React.SFC<DrawerProps> = props => {
       {props.options.map((option, index) =>
         <Option key={option}
                 text={option}
-                checked={index + 1 === props.chosen}
+                checked={-1 !== props.selected.findIndex(word => word === option)}
+                focusing={index + 1 === props.focusing}
                 position={index + 1}
                 onClick={props.onClick} />
       )}
