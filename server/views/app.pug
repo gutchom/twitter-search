@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Observe2ch Web
+    include elements/head
+  body
+    #app
+    script
+      | window.userInfo=
+      != userInfo
+      | ;
+    script(type='text/javascript', src='/assets/js/app.js')
