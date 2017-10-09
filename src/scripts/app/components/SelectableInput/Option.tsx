@@ -1,15 +1,15 @@
 import React from 'react'
 
 export interface OptionProps {
+  text: string
   checked: boolean
   position: number
-  option: string
-  onChange(cursor: number): void
+  onClick(cursor: number): void
 }
 
 const Option: React.SFC<OptionProps> = props => {
-  function handleChange() {
-    props.onChange(props.position)
+  function handleClick() {
+    props.onClick(props.position)
   }
 
   return (
@@ -19,12 +19,8 @@ const Option: React.SFC<OptionProps> = props => {
                type="checkbox"
                tabIndex={-1}
                checked={props.checked}
-               value={props.position}
-               onChange={handleChange}
-               onClick={handleChange} />
-        <div className="query-input--option--container">
-          <span className="query-input--option--body">{props.option}</span>
-        </div>
+               onClick={handleClick} />
+        <div className="query-input--option--container">{props.text}</div>
       </label>
     </li>
   )

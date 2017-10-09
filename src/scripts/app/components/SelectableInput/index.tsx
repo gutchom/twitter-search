@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FocusEvent, KeyboardEvent, MouseEvent } from 'react'
+import React, { ChangeEvent, FocusEvent, KeyboardEvent } from 'react'
 import Drawer from './Drawer'
 
 export interface SelectableInputProps {
@@ -9,21 +9,23 @@ export interface SelectableInputProps {
 }
 
 export interface SelectableInputState {
+  isDrawerOpen: boolean
   cursor: number
   input: string
+  cursorOnFocus: number
   inputOnFocus: string
-  isDrawerOpen: boolean
 }
 
 export default class SelectableInput extends React.Component<SelectableInputProps, SelectableInputState> {
-  hasPressed = false
+  kanaInput = false
   input: HTMLInputElement
   drawer: HTMLUListElement
   state = {
+    isDrawerOpen: false,
     cursor: 0,
     input: (this.props.defaults || []).join(' '),
-    inputOnFocus: '',
-    isDrawerOpen: false,
+    cursorOnFocus: 0,
+    inputOnFocus: (this.props.defaults || []).join(' '),
   }
 
   get cursor(): number { return this.state.cursor }
@@ -32,22 +34,19 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     const length = this.props.options.length
     const cursor = next > length ? length : next > 0 ? next : 0
     const input = cursor > 0 ? this.props.options[length - cursor] : this.state.inputOnFocus
-    const isDrawerOpen = length > 0 && cursor > 0
 
-    if (isDrawerOpen) {
+    if (length > 0 && cursor > 1) {
       const item = this.drawer.children[cursor - 1] as HTMLLIElement
-      this.drawer.scrollTop = item.offsetTop + item.offsetHeight - this.drawer.offsetHeight
+      this.drawer.scrollTo(0, item.offsetTop + item.offsetHeight - this.drawer.offsetHeight)
     } else {
-      this.drawer.scrollTop = 0
+      this.drawer.scrollTo(0, 0)
     }
 
-    this.setState({ cursor, input, isDrawerOpen })
-    this.handleChange(input)
+    this.handleSubmit(input, cursor, length > 0 && cursor > 0)
   }
 
   componentDidMount() {
-    document.body.addEventListener('click', this.handleBodyClick, false)
-    this.input.addEventListener('click', this.handleInputClick, false)
+    this.input.addEventListener('click', this.handleInputClick)
     this.props.focus && this.input.focus()
   }
 
@@ -57,71 +56,70 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleBodyClick = () => {
-    this.setState({ isDrawerOpen: false })
+    this.handleSubmit(this.state.input)
   }
 
-  handleInputClick = (e: Event) => {
+  handleInputClick = (e: MouseEvent) => {
     e.stopPropagation()
   }
 
-  handleChange = (input: string) => {
+  handleSubmit = (input: string, cursor = this.cursor, isDrawerOpen = false) => {
+    this.setState({ input, cursor, isDrawerOpen })
     this.props.onChange(input.replace(/(\s+|　)/g, ' ').split(/\s/))
   }
 
-  handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ input: e.target.value })
-  }
-
   handleInputFocus = (e: FocusEvent<HTMLInputElement>) => {
+    document.body.addEventListener('click', this.handleBodyClick)
     this.setState({
-      inputOnFocus: (e.target as HTMLInputElement).value,
-      isDrawerOpen: (this.props.options.length > 0),
+      isDrawerOpen: true,
+      cursorOnFocus: this.cursor,
+      inputOnFocus: e.currentTarget.value,
     })
   }
 
   handleInputBlur = (e: FocusEvent<HTMLInputElement>) => {
-    const input = (e.target as HTMLInputElement).value
-
-    this.setState({ input, isDrawerOpen: false })
-    this.handleChange(input)
+    document.body.removeEventListener('click', this.handleBodyClick)
+    setTimeout(() => this.setState({ isDrawerOpen: false }), 100)
   }
 
-  handleInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key.length === 1) { return }
+  handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      input: e.target.value,
+      cursor: 0,
+    })
+  }
 
-    switch (e.key) {
-      case 'Escape':
-        this.setState({ input: this.state.inputOnFocus, isDrawerOpen: false })
-        this.input.blur()
-        break
+  handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    this.kanaInput = e.keyCode === 229 ? true : this.kanaInput && e.keyCode !== 13 && e.keyCode !== 27
 
-      case 'Enter':
-        if (this.hasPressed) {
-          this.handleChange(this.state.input)
+    if (!this.kanaInput) {
+      switch (e.keyCode) {
+        case 13: // Enter
           this.input.blur()
-        }
-        break
+          this.handleSubmit(this.input.value)
+          break
 
-      case 'ArrowUp':
-        this.cursor--
-        break
+        case 27: // Escape
+          this.input.blur()
+          this.handleSubmit(this.state.inputOnFocus, this.state.cursorOnFocus)
+          break
 
-      case 'ArrowDown':
-        this.cursor++
-        break
+        case 38: // ArrowUp
+          this.cursor--
+          break
 
-      default:
-        break
+        case 40: // ArrowDown
+          this.cursor++
+          break
+
+        default:
+          break
+      }
     }
-
-    this.hasPressed = false
   }
 
-  handleSelect = (cursor: number) => {
-    const input = this.props.options[this.props.options.length - cursor]
-
-    this.setState({ cursor, input, isDrawerOpen: false })
-    this.handleChange(input)
+  handleDrawerClick = (cursor: number) => {
+    this.handleSubmit(this.props.options[this.props.options.length - cursor], cursor)
   }
 
   inputRefs = (el: HTMLInputElement) => {
@@ -140,15 +138,14 @@ export default class SelectableInput extends React.Component<SelectableInputProp
                onChange={this.handleInputChange}
                onFocus={this.handleInputFocus}
                onBlur={this.handleInputBlur}
-               onKeyPress={() => this.hasPressed = true}
-               onKeyUp={this.handleInputKeyUp}
+               onKeyDown={this.handleInputKeyDown}
                ref={this.inputRefs} />
 
-        <Drawer visible={this.state.isDrawerOpen}
+        <Drawer refs={this.drawerRefs}
+                visible={this.state.isDrawerOpen}
                 options={[...this.props.options].reverse()}
                 chosen={this.state.cursor}
-                onChange={this.handleSelect}
-                refs={this.drawerRefs} />
+                onClick={this.handleDrawerClick} />
       </div>
     )
   }

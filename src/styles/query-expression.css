@@ -161,6 +161,7 @@
     border: 3px solid var(--color-gray);
     border-radius: var(--radius-middle);
     font-size: 0.75em;
+    line-height: normal;
     margin: auto;
     outline: none;
     padding: 8px 0;
@@ -179,7 +180,6 @@
       color: var(--color-select);
       font-size: 1.2em;
       width: var(--query-input-width);
-      z-index: 15;
 
       @media (--screen-tablet) {
         width: var(--query-input-base-width);
@@ -210,8 +210,8 @@
     z-index: 10;
 
     &.visible {
-      box-shadow: 0 0 6px 3px var(--color-gray);
-      max-height: 10em;
+      box-shadow: 0 3px 6px 3px var(--color-gray);
+      max-height: 8em;
     }
 
     & .checkbox:checked ~ .query-input--option--container {
@@ -227,17 +227,17 @@
       width: 100%;
 
       & .query-input--option--container {
+        border: 2px solid rgba(255, 255, 255, 0);
         border-radius: 4px;
         box-sizing: border-box;
         font-size: 1em;
         height: 100%;
-        padding: 6px 0;
+        padding: 4px 0;
         transition: var(--duration-quick);
         width: 100%;
 
         &:hover {
-          border: 2px solid var(--color-hover);
-          padding: 4px 0;
+          border-color: var(--color-hover);
         }
       }
     }
