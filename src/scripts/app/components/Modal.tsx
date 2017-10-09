@@ -83,24 +83,21 @@ export default class Modal extends React.Component<ModalProps, {}> {
 
   render() {
     return (
-      <div className={this.classNames('modal', this.props.isOpen ? 'visible' : '').join(' ')}>
+      <div className={this.classNames('modal', this.props.visible ? 'visible' : '').join(' ')}>
+        <div className="modal--window">
+          <div className="modal--content" ref={this.ref}>
+            {this.props.header && <div className="modal--spacer"/>}
 
-        {this.props.header && <header>{this.props.header}</header>}
+            {this.props.children}
 
-        <div className="modal--content" ref={this.ref}>
-          {this.props.header && <div className="modal--spacer"/>}
-
-          {this.props.children}
-
-          {this.props.footer && <div className="modal--spacer"/>}
+            {this.props.footer && <div className="modal--spacer"/>}
+          </div>
+          {this.props.header && <header>{this.props.header}</header>}
+          {this.props.footer && <footer>{this.props.footer}</footer>}
+          <button className="modal--close" onClick={this.handleCloseClick}>
+            <i className="fa fa-close"/>
+          </button>
         </div>
-
-        {this.props.footer && <footer>{this.props.footer}</footer>}
-
-        <button className="modal--close" onClick={this.handleCloseClick}>
-          <i className="fa fa-close"/>
-        </button>
-
       </div>
     )
   }

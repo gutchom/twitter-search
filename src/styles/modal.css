@@ -2,72 +2,83 @@
 
 :root {
   --modal-padding: 4vw;
-  --modal-bar-height: 12.5vw;
+  --modal-bar-height: 3em;
 }
 
 .modal {
-  background: rgba(0, 0, 0, 0.3);
-  display: none;
+  background: rgba(0, 0, 0, 0);
+  display: block;
   height: 100%;
   left: 0;
   position: fixed;
   top: 0;
+  transition: var(--duration) background;
+  visibility: hidden;
   width: 100%;
   z-index: 9999;
 
   &.visible {
-    display: block;
+    background: rgba(0, 0, 0, 0.3);
+    visibility: visible;
+
+    & .modal--window {
+      transform: scale(1);
+    }
   }
 
-  & .modal--close {
-    background: #444;
-    border-radius: 50%;
-    color: #fff;
-    cursor: pointer;
-    font-size: 18px;
-    height: 7.5vw;
-    position: fixed;
-    right: 4px;
-    text-align: center;
-    top: 4px;
-    width: 7.5vw;
-    z-index: 1150;
-  }
-
-  & .modal--content {
+  & .modal--window {
     background: #fff;
     border-radius: var(--radius-small);
     bottom: var(--modal-padding);
     box-shadow: 0 0 10px 0 #333;
     left: var(--modal-padding);
-    -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-    padding: 4px 0;
-    position: fixed;
+    position: absolute;
     right: var(--modal-padding);
     top: var(--modal-padding);
+    transform: scale(0);
+    transition: var(--duration);
+  }
+
+  & .modal--close {
+    background: #444;
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    height: 24px;
+    position: fixed;
+    right: calc(24px * -0.5);
+    text-align: center;
+    top: calc(24px * -0.5);
+    width: 24px;
+  }
+
+  & .modal--content {
+    border-radius: inherit;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+    position: absolute;
+    width: 100%;
   }
 
   & header,
   & footer {
-    background: #fff;
     box-sizing: border-box;
     height: var(--modal-bar-height);
-    left: var(--modal-padding);
-    padding: 4px;
-    position: fixed;
-    right: var(--modal-padding);
-    z-index: 1100;
+    position: absolute;
+    width: 100%;
   }
 
   & header {
     border-radius: var(--radius-small) var(--radius-small) 0 0;
-    top: var(--modal-padding);
+    top: 0;
   }
 
   & footer {
     border-radius: 0 0 var(--radius-small) var(--radius-small);
-    bottom: var(--modal-padding);
+    bottom: 0;
   }
 
   & .modal--spacer {
