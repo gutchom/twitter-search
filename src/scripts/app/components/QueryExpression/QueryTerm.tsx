@@ -43,11 +43,6 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
     this.props.onChange(this.props.position, { keywords })
   }
 
-  handleQueryOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    this.setState({ queryOperator: e.target.value as QueryOperator })
-    this.props.onChange(this.props.position, { queryOperator: e.target.value as QueryOperator })
-  }
-
   handleKeywordOperatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
     this.setState({ keywordOperator: e.target.value as LogicalOperator })
     this.props.onChange(this.props.position, { keywordOperator: e.target.value as LogicalOperator })
@@ -68,14 +63,6 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
   render() {
     return (
       <li className="query-expression--term">
-        {this.props.position === 0 ||
-          <select value={this.state.queryOperator}
-                  onChange={this.handleQueryOperatorChange}>
-            {Array(2).fill(null).map((_, index) =>
-              <option key={index} value={Operator[index]}>{translate.queryJa[index]}</option>
-            )}
-          </select>
-        }
         <div className={`query-expression--confirm ${this.state.confirming ? 'visible' : ''}`}
              onClick={this.handleCancelRemove}>
           <button className="query-expression--confirm--remove" onClick={this.handleRemove}>

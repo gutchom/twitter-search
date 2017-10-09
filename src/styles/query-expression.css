@@ -5,11 +5,41 @@
   --query-input-base-width: 320px;
 }
 
+.query-expression {
+  margin-bottom: 144px;
+}
+
 .query-expression--term {
   border-bottom: 1px solid var(--color-gray);
   margin: 0 6px;
-  padding: 6px;
+  padding: 16px 6px 0;
   position: relative;
+  text-align: center;
+
+  &::before {
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--color-gray);
+    border-radius: 50%;
+    box-sizing: border-box;
+    content: '&';
+    display: flex;
+    font-size: 14px;
+    font-weight: 100;
+    height: 24px;
+    justify-content: center;
+    left: -50%;
+    margin: auto;
+    position: absolute;
+    right: -50%;
+    top: -12px;
+    width: 24px;
+  }
+
+  &:first-child::before,
+  &:last-child::before {
+    display: none;
+  }
 
   &:last-child {
     border: none;
@@ -23,6 +53,7 @@
     border-radius: var(--radius-small);
     display: block;
     height: 2em;
+    margin: 3px;
     outline: none;
     text-align: center;
     transition: width var(--duration-middle);
@@ -100,7 +131,7 @@
 }
 
 .query-expression--dashboard {
-  padding: 8px 0 36px;
+  padding: 8px 0;
   text-align: center;
 
   & .query-expression--button {
@@ -120,6 +151,7 @@
 }
 
 .query-input {
+  display: inline;
   margin: 2px;
   position: relative;
   text-align: center;
@@ -259,6 +291,9 @@
 
 .query-condition {
   border-bottom: 1px solid var(--color-gray);
+  padding: 2px;
+  position: relative;
+  text-align: left;
 
   &:last-child {
     border-bottom: none;
@@ -268,13 +303,46 @@
     background: var(--color-orange);
     color: #fff;
   }
+
+  &:first-child::before {
+    display: none;
+  }
+
+  &::before {
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--color-gray);
+    border-radius: 50%;
+    box-sizing: border-box;
+    content: '&';
+    display: flex;
+    font-size: 9px;
+    font-weight: 100;
+    height: 18px;
+    justify-content: center;
+    left: -50%;
+    margin: auto;
+    position: absolute;
+    right: -50%;
+    top: -9px;
+    width: 18px;
+  }
+
+  & .condition {
+    border: 2px solid rgba(255, 255, 255, 0);
+  }
+
+  &.focusing .condition {
+    border-color: var(--color-hover);
+  }
 }
 
 .condition {
   border-radius: var(--radius-tiny);
+  padding-top: 8px;
 
   & p {
-    margin: 2px;
+    margin: 0;
   }
 
   & .condition--keywords {
@@ -284,13 +352,6 @@
 
   & .condition--operator {
     font-size: 72%;
-
-    &:first-child {
-      text-align: left;
-    }
-
-    &:last-child {
-      text-align: right;
-    }
+    text-align: right;
   }
 }
