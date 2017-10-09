@@ -5,7 +5,6 @@ export interface SelectableInputProps {
   defaults?: string[]
   options: string[]
   onChange(keywords: string[]): void
-  onRemove(e: MouseEvent<HTMLButtonElement>): void
 }
 
 export interface SelectableInputState {
@@ -142,10 +141,6 @@ export default class SelectableInput extends React.Component<SelectableInputProp
                onKeyPress={() => this.hasPressed = true}
                onKeyUp={this.handleInputKeyUp}
                ref={this.inputRefs} />
-
-        <button className="query-input--remove" tabIndex={-1} onClick={this.props.onRemove}>
-          <i className="fa fa-trash-o"/>
-        </button>
 
         <Drawer visible={this.state.isDrawerOpen}
                 options={[...this.props.options].reverse()}

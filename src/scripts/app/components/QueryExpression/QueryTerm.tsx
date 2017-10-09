@@ -67,14 +67,6 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
   render() {
     return (
       <li className="query-expression--term">
-        {this.state.confirming && (
-          <div className="query-expression--confirm" onClick={this.handleCancelRemove}>
-            <button className="query-expression--confirm--remove" onClick={this.handleRemove}>
-              <i className="fa fa-trash-o"/>
-            </button>
-          </div>
-        )}
-
         {this.props.position === 0 ||
           <select value={this.state.queryOperator}
                   onChange={this.handleQueryOperatorChange}>
@@ -83,11 +75,20 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
             )}
           </select>
         }
+        <div className={`query-expression--confirm ${this.state.confirming ? 'visible' : ''}`}
+             onClick={this.handleCancelRemove}>
+          <button className="query-expression--confirm--remove" onClick={this.handleRemove}>
+            <i className="fa fa-trash-o"/>
+          </button>
+        </div>
+
+        <button className="query-expression--remove" onClick={this.handleRemove}>
+          <i className="fa fa-trash-o"/>
+        </button>
 
         <SelectableInput defaults={this.state.keywords}
                          options={this.props.suggestions}
-                         onChange={this.handleKeywordChange}
-                         onRemove={this.handleRemove}/>
+                         onChange={this.handleKeywordChange}/>
 
         <select value={this.state.keywordOperator}
                 onChange={this.handleKeywordOperatorChange}>
