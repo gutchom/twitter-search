@@ -12,14 +12,17 @@ export interface HistoryProps {
 }
 
 export interface HistoryState {
-  positions: number[][]
+  cursor: number
+  selected: number[][]
 }
 
 export default class Revert extends React.Component<HistoryProps, HistoryState> {
   logger = new Logger<number[][]>('history-selected', '1.0', { duration: 0 })
+  positions: number[][]
 
   state = {
-    positions: ([[]] as number[][]),
+    cursor: -1,
+    selected: ([[]] as number[][]),
   }
 
   constructor(props: HistoryProps) {
@@ -28,39 +31,101 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
     this.logger.save([[]])
   }
 
-  handleChange = (position: number[]) => {
-    const filtered = this.state.positions
-      .filter(selected => !(position[0] === selected[0] && position[1] === selected[1]))
-    const positions = filtered.length < this.state.positions.length ? filtered : filtered.concat([position])
+  get cursor(): number { return this.state.cursor }
 
-    this.logger.save(positions)
-    this.setState({ positions })
+  set cursor(next: number) {
+    const length = this.positions.length
+    const cursor = next >= length ? length - 1 : next >= 0 ? next : 0
+
+    this.setState({ cursor })
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown)
+  }
+
+  componentWillReceiveProps(nextProps: HistoryProps) {
+    if (nextProps.visible && !this.props.visible) {
+      this.logger.empty().save([[]])
+      this.setState({ selected: [[]]})
+      document.addEventListener('keydown', this.handleKeyDown)
+    }
+    if (!nextProps.visible && this.props.visible) {
+      document.removeEventListener('keydown', this.handleKeyDown)
+    }
+
+    this.positions = this.props.history
+      .reduce((flatten: number[][], _, index0) => flatten.concat(_.map((_, index1) => [index0, index1])), [])
+  }
+
+  handleKeyDown = (e: KeyboardEvent) => {
+    console.log(e.keyCode)
+    switch (e.keyCode) {
+      case 13: // Enter
+        this.handleSubmit()
+        break
+
+      case 27: // Escape
+        this.props.onCancel()
+        break
+
+      case 32: // Space
+        this.cursor >= 0 && this.handleChange(this.positions[this.cursor])
+        break
+
+      case 37: // ArrowLeft
+        this.handleUndo()
+        break
+
+      case 38: // ArrowUp
+        this.cursor--
+        break
+
+      case 39: // ArrowRight
+        this.handleRedo()
+        break
+
+      case 40: // ArrowDown
+        this.cursor++
+        break
+
+      default:
+        break
+    }
+  }
+
+  handleChange = (position: number[]) => {
+    const filtered = this.state.selected.filter(old => !(position[0] === old[0] && position[1] === old[1]))
+    const selected = filtered.length < this.state.selected.length ? filtered : filtered.concat([position])
+
+    this.logger.save(selected)
+    this.setState({ selected })
   }
 
   handleUndo = () => {
     if (this.logger.canUndo) {
-      this.logger.undo()
-      this.setState({ positions: this.logger.load() })
+      this.setState({ selected: this.logger.undo() })
     }
   }
 
   handleRedo = () => {
     if (this.logger.canRedo) {
-      this.logger.redo()
-      this.setState({ positions: this.logger.load() })
+      this.setState({ selected: this.logger.redo() })
     }
   }
 
   handleSubmit = () => {
-    const query = this.state.positions
-      .slice(1)
-      .sort((a, b) => a[1] - b[1])
-      .sort((a, b) => a[0] - b[0])
-      .map(pos => this.props.history[pos[0]][pos[1]])
+    if (this.state.selected.length > 1) {
+      const query = this.state.selected
+        .slice(1)
+        .sort((a, b) => a[1] - b[1])
+        .sort((a, b) => a[0] - b[0])
+        .map(pos => this.props.history[pos[0]][pos[1]])
 
-    this.props.onSubmit(query)
-    this.logger.empty().save([[]])
-    this.setState({ positions: [[]] })
+      this.props.onSubmit(query)
+      this.logger.empty().save([[]])
+      this.setState({ selected: [[]] })
+    }
   }
 
   render() {
@@ -76,22 +141,23 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
                  <button className={this.logger.canRedo ? 'enable' : ''} onClick={this.handleRedo}>
                    <i className="fa fa-repeat"/>
                  </button>
-                 <button className={'submit ' + (this.logger.canUndo ? 'enable' : '')} onClick={this.handleSubmit}>
-                   決定
-                 </button>
+                 <button className={'submit ' + (this.state.selected.length > 1 ? 'enable' : '')}
+                         onClick={this.handleSubmit}>決定</button>
                </div>
              }>
         <ul className="history">
-          {this.props.history.map((query, historyIndex) =>
-            <li className="history--item" key={historyIndex}>
+          {this.props.history.map((query, index0) =>
+            <li className="history--item" key={index0}>
               <ul>
-                {query.map((condition, queryIndex) =>
-                  <RevertItem key={queryIndex}
-                               checked={-1 !== this.state.positions.findIndex(position =>
-                                 position[0] === historyIndex && position[1] === queryIndex)}
-                               position={[historyIndex, queryIndex]}
-                               condition={condition}
-                               onChange={this.handleChange}/>
+                {query.map((condition, index1) =>
+                  <RevertItem key={index1}
+                              checked={-1 !== this.state.selected.findIndex(selected =>
+                                selected[0] === index0 && selected[1] === index1)}
+                              focusing={-1 !== this.cursor &&
+                                this.positions[this.cursor][0] === index0 && this.positions[this.cursor][1] === index1}
+                              position={[index0, index1]}
+                              condition={condition}
+                              onChange={this.handleChange}/>
                 )}
               </ul>
             </li>
