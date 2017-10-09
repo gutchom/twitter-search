@@ -105,7 +105,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
 
         <li>
           <Revert history={this.logger.all.reverse()}
-                  isOpen={this.state.isHistoryOpen}
+                  visible={this.state.isHistoryOpen}
                   onCancel={this.handleRevertCancel}
                   onSubmit={this.handleRevertSubmit}/>
         </li>

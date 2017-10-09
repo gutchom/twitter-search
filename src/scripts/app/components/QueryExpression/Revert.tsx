@@ -6,7 +6,7 @@ import { QueryCondition } from './QueryTerm'
 
 export interface HistoryProps {
   history: QueryCondition[][]
-  isOpen: boolean
+  visible: boolean
   onCancel(): void
   onSubmit(query: QueryCondition[]): void
 }
@@ -15,7 +15,6 @@ export interface HistoryState {
   positions: number[][]
 }
 
-// FIXME 項目選択時にスクロールが頭まで戻る
 export default class Revert extends React.Component<HistoryProps, HistoryState> {
   logger = new Logger<number[][]>('history-selected', '1.0', { duration: 0 })
 
@@ -66,7 +65,7 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
 
   render() {
     return (
-      <Modal isOpen={this.props.isOpen}
+      <Modal visible={this.props.visible}
              onClose={this.props.onCancel}
              header={<h1><i className="fa fa-clock-o"/>履歴</h1>}
              footer={

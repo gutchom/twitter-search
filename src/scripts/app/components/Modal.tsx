@@ -4,7 +4,7 @@ export interface ModalProps {
   className?: string|string[]
   header?: ReactNode
   footer?: ReactNode
-  isOpen: boolean
+  visible: boolean
   onClose(e: MouseEvent<HTMLButtonElement>): void
 }
 
@@ -27,9 +27,11 @@ export default class Modal extends React.Component<ModalProps, {}> {
   }
 
   componentWillReceiveProps(nextProps: ModalProps) {
-    if (nextProps.isOpen === true) {
-      this.content.scrollTop = 1
-      this.rootScrollPosition = document.body.scrollTop || document.documentElement.scrollTop
+    if (nextProps.visible !== this.props.visible) {
+      if (nextProps.visible) {
+        this.content.scrollTo(0, 1)
+        this.rootScrollPosition = document.body.scrollTop || document.documentElement.scrollTop
+      }
     }
   }
 
@@ -41,24 +43,28 @@ export default class Modal extends React.Component<ModalProps, {}> {
   adjustScroll = () => {
     const bottom = this.content.scrollHeight - this.content.clientHeight
 
-    if (this.content.scrollTop === 0) { this.content.scrollTop = 1 }
-    if (this.content.scrollTop === bottom) { this.content.scrollTop = bottom - 1 }
+    if (this.content.scrollTop === 0) {
+      this.content.scrollTo(0, 1)
+    }
+    if (this.content.scrollTop === bottom) {
+      this.content.scrollTo(0, bottom - 1)
+    }
   }
 
   preventBehindScroll = (e: TouchEvent) => {
     const scrollTop = this.content.scrollTop
     const bottom = this.content.scrollHeight - this.content.clientHeight
 
-    if (this.props.isOpen) {
-      if (isModal(e.target as HTMLElement)) {
+    if (this.props.visible) {
+      if (isModal(e.currentTarget as HTMLElement|Window)) {
         e.stopPropagation()
       } else if (scrollTop === 0 || scrollTop === bottom) {
         e.preventDefault()
       }
     }
 
-    function isModal(el: HTMLElement) {
-      while (el.parentElement !== null) {
+    function isModal(el: HTMLElement|Window) {
+      while (el instanceof HTMLElement && el.parentElement !== null) {
         if (el.classList.contains('modal')) { return true }
         el = el.parentElement
       }
@@ -67,7 +73,7 @@ export default class Modal extends React.Component<ModalProps, {}> {
   }
 
   handleCloseClick = (e: MouseEvent<HTMLButtonElement>) => {
-    scrollTo(0, this.rootScrollPosition)
+    window.scrollTo(0, this.rootScrollPosition)
     this.props.onClose(e)
   }
 
