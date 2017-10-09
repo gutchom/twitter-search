@@ -7,15 +7,14 @@ import SelectableInput from 'app/components/SelectableInput'
 Enzyme.configure({ adapter: new Adapter() })
 
 function handleChange(keywords: string[]): void {}
-function handleRemove(): void {}
 
 describe('SelectableInput.tsx', () => {
   it('has correct default text', () => {
     const defaults = ['foo', 'bar']
     const wrapper = mount(<SelectableInput defaults={defaults}
-                                           options={[]}
-                                           onChange={handleChange}
-                                           onRemove={handleRemove}/>)
+                                           focus={true}
+                                           options={defaults}
+                                           onChange={handleChange} />)
 
     assert.strictEqual(wrapper.state('input'), defaults.join(' '))
   })
