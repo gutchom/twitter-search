@@ -1,3 +1,4 @@
+import 'app/lib/array-prototype'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from 'app/components/App'
