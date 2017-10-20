@@ -7,6 +7,7 @@
   --color-green: #4aad64;
   --color-gray: #ddd;
   --color-orange: #f3a35d;
+  --color-purple: #6739d8;
   --color-orange-dark: color(var(--color-orange) blackness(7.5%));
   --radius: 12px;
   --radius-tiny: calc(var(--radius) * 0.25);

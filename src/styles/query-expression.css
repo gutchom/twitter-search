@@ -6,7 +6,7 @@
 }
 
 .query-expression {
-  margin-bottom: 144px;
+  padding-bottom: 36px;
 }
 
 .query-expression--term {
@@ -226,6 +226,10 @@
       text-align: center;
       width: 100%;
 
+      &:first-child {
+        border: none;
+      }
+
       & .query-input--option--container {
         border: 2px solid rgba(255, 255, 255, 0);
         border-radius: 4px;
@@ -236,7 +240,7 @@
         transition: var(--duration-quick);
         width: 100%;
 
-        &:hover {
+        &.focusing {
           border-color: var(--color-hover);
         }
       }
