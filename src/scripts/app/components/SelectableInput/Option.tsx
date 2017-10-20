@@ -20,6 +20,7 @@ const Option: React.SFC<OptionProps> = props => {
                type="checkbox"
                tabIndex={-1}
                checked={props.checked}
+               onChange={handleClick}
                onClick={handleClick} />
         <div className={`query-input--option--container ${props.focusing ? 'focusing' : ''}`}>{props.text}</div>
       </label>
