@@ -1,11 +1,13 @@
-const { resolve } = require('path')
+const path = require('path')
+const glob = require('glob')
 const webpack = require('webpack')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const isDevelopment = (process.env.NODE_ENV === 'development')
 const isTesting = (process.env.NODE_ENV === 'test')
+const entries = __dirname + '/src/scripts/app/entries/'
 
-const combine = base => addition => {
-  return Object.keys(addition)
+const combine = base => addition => (
+  Object.keys(addition)
     .reduce((merged, key) => Object.assign({}, merged, {
       [key]: merged[key] === undefined
         ? addition[key]
@@ -15,10 +17,10 @@ const combine = base => addition => {
             ? Object.assign({}, merged[key], addition[key])
             : addition[key]
     }), base)
-}
+)
 
 const base = {
-  context: resolve(__dirname, 'src/scripts'),
+  context: path.resolve(__dirname, 'src/scripts'),
   plugins: [
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new webpack.NoEmitOnErrorsPlugin(),
@@ -28,7 +30,7 @@ const base = {
     modules: ['node_modules'],
     extensions: ['.ts', '.tsx', '.js', 'jsx', 'json'],
     alias: {
-      app: resolve(__dirname, 'src/scripts/app'),
+      app: path.resolve(__dirname, 'src/scripts/app'),
     },
   },
 }
@@ -63,7 +65,7 @@ const test = combine(base)({
           {
             loader: 'ts-loader',
             options: {
-              configFile: resolve(__dirname, 'tsconfig.test.json'),
+              configFile: path.resolve(__dirname, 'tsconfig.test.json'),
             },
           },
         ],
@@ -73,12 +75,14 @@ const test = combine(base)({
 })
 
 const common = combine(base)({
-  entry: {
-    app: resolve(__dirname, 'src/scripts/app/index.tsx')
-  },
+  entry: glob
+    .sync('**/*.@(ts|tsx)', { cwd: entries, root: entries })
+    .reduce((list, path) => {
+      return Object.assign(list, { [path.split('.')[0]]: entries + path })
+    }, {}),
   output: {
     filename: '[name].js',
-    path: resolve(__dirname, 'public/js'),
+    path: path.resolve(__dirname, 'public/js'),
   },
   module: {
     rules: [

@@ -12,7 +12,7 @@ app.set('view engine', 'pug')
 
 app.get('/', (req, res) => {
   console.log('[server]: GET "/"'.cyan)
-  res.render('app.pug', { userInfo })
+  res.render('search.pug', { userInfo })
 })
 
 const server = app.listen(process.env.PORT || 3000, () => {
