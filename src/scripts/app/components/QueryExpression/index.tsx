@@ -40,7 +40,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
       ? this.logger.all
         .reduce((pre: string[], nex) => pre.concat(...nex.map(({ keywords }) => keywords)), [])
         .filter(keywords => keywords.length > 0)
-        .unique()
+        .dedupe()
         .slice(-20)
       : []
   }
