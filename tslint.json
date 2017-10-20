@@ -6,7 +6,7 @@
     "comment-format": [true, "check-space"],
     "curly": true,
     "indent": [true, "spaces"],
-    "max-line-length": [true, 120],
+    "max-line-length": [true, 150],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-eval": true,
