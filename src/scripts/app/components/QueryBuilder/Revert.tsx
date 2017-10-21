@@ -153,7 +153,7 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
                               checked={-1 !== this.state.selected.findIndex(selected =>
                                 selected[0] === index0 && selected[1] === index1)}
                               focusing={-1 !== this.cursor &&
-                                this.positions[this.cursor][0] === index0 && this.positions[this.cursor][1] === index1}
+                              this.positions[this.cursor][0] === index0 && this.positions[this.cursor][1] === index1}
                               position={[index0, index1]}
                               condition={condition}
                               onChange={this.handleChange}/>

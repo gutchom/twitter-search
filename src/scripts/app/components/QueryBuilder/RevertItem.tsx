@@ -4,7 +4,6 @@ import { QueryCondition } from './QueryTerm'
 
 export interface RevertItemProps {
   checked: boolean
-  focusing: boolean
   position: number[]
   condition: QueryCondition
   onChange(position: number[]): void
@@ -16,13 +15,14 @@ const RevertItem: React.SFC<RevertItemProps> = props => {
   }
 
   return (
-    <li className={`query-condition ${props.focusing ? 'focusing' : ''}`}>
-      <label>
-        <input className="checkbox"
-               type="checkbox"
-               tabIndex={-1}
-               checked={props.checked}
-               onClick={handleClick} />
+    <li className="query-condition">
+      <label htmlFor="query-condition">
+        <input
+          className="checkbox"
+          type="checkbox"
+          checked={props.checked}
+          onClick={handleClick}
+        />
         <Condition {...props.condition} />
       </label>
     </li>

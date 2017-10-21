@@ -2,6 +2,7 @@ import React from 'react'
 import Logger from 'app/stores/Logger'
 import QueryTerm, { QueryCondition } from './QueryTerm'
 import Revert from './Revert'
+import Header from 'app/components/Header'
 
 const defaultCondition: QueryCondition = {
   operator: 'OR',
@@ -20,7 +21,7 @@ export interface QueryExpressionState {
 }
 
 export default class QueryExpression extends React.Component<{}, QueryExpressionState> {
-  logger = new Logger<QueryCondition[]>('query', '1.5', { size: 10 })
+  logger = new Logger<QueryCondition[]>('query', '1.5', { range: 20 })
   queryId = 0
 
   constructor(props: {}) {
@@ -82,32 +83,39 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
 
   render() {
     return (
-      <ul className="query-expression">
-        {...this.state.query.map((condition, index) =>
-          <QueryTerm key={condition.id}
-                     focus={condition.focus}
-                     position={index}
-                     defaults={condition}
-                     suggestions={this.state.suggestions}
-                     onChange={this.handleQueryChange}
-                     onRemove={this.handleQueryRemove} />
-        )}
-        <li className="query-expression--dashboard">
-          <button className="query-expression--button" onClick={this.handleRevertClick}>
-            <i className="fa fa-clock-o"/>
-          </button>
-          <button className="query-expression--button" onClick={this.handleAddClick}>
-            <i className="fa fa-plus"/>
-          </button>
-          <button className="query-expression--button" onClick={this.handleSearchClick}>
-            <i className="fa fa-search"/>
-          </button>
-          <Revert history={this.logger.all.reverse()}
-                  visible={this.state.isHistoryOpen}
-                  onCancel={this.handleRevertCancel}
-                  onSubmit={this.handleRevertSubmit}/>
-        </li>
-      </ul>
+      <main className="query-expression">
+        <Header icon="search" title="検索" />
+        <ul>
+          {...this.state.query.map((condition, index) =>
+            <QueryTerm
+              key={condition.id}
+              focus={condition.focus}
+              position={index}
+              defaults={condition}
+              suggestions={this.state.suggestions}
+              onChange={this.handleQueryChange}
+              onRemove={this.handleQueryRemove}
+            />
+          )}
+          <li className="query-expression--dashboard">
+            <button className="query-expression--button" onClick={this.handleRevertClick}>
+              <i className="fa fa-clock-o" />
+            </button>
+            <button className="query-expression--button" onClick={this.handleAddClick}>
+              <i className="fa fa-plus" />
+            </button>
+            <button className="query-expression--button" onClick={this.handleSearchClick}>
+              <i className="fa fa-search" />
+            </button>
+          </li>
+        </ul>
+        <Revert
+          history={this.logger.all.reverse()}
+          visible={this.state.isHistoryOpen}
+          onCancel={this.handleRevertCancel}
+          onSubmit={this.handleRevertSubmit}
+        />
+      </main>
     )
   }
 }
