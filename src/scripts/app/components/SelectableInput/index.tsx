@@ -4,7 +4,7 @@ import Drawer from './Drawer'
 export interface SelectableInputProps {
   defaults?: string[]
   focus: boolean
-  options: string[]
+  choices: string[]
   onChange(keywords: string[]): void
 }
 
@@ -27,7 +27,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   get cursor(): number { return this.state.cursor }
 
   set cursor(next: number) {
-    const length = this.props.options.length
+    const length = this.props.choices.length
     const cursor = next > length ? length : next > 0 ? next : 0
 
     if (length > 0 && cursor > 1) {
@@ -50,18 +50,18 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     this.input.removeEventListener('click', this.handleInputClick)
   }
 
+  handleSubmit = (input = this.state.input, cursor = this.cursor, isDrawerOpen = false) => {
+    const keywords = input.split(/[\s\u3000]/).filter(phrase => phrase.length > 0)
+    this.setState({ input: `${keywords.join(' ')} `, cursor, isDrawerOpen })
+    this.props.onChange(keywords)
+  }
+
   handleBodyClick = () => {
     this.handleSubmit(this.state.input)
   }
 
   handleInputClick = (e: MouseEvent) => {
     e.stopPropagation()
-  }
-
-  handleSubmit = (input = this.state.input, cursor = this.cursor, isDrawerOpen = false) => {
-    input = input.replace(/^[\s　]*(.*)[\s　]*$/, '$1').replace(/[\s　]+/g, ' ')
-    this.setState({ input, cursor, isDrawerOpen })
-    this.props.onChange(input.split(' '))
   }
 
   handleInputFocus = (e: FocusEvent<HTMLInputElement>) => {
@@ -116,15 +116,13 @@ export default class SelectableInput extends React.Component<SelectableInputProp
 
   handleDrawerClick = (cursor: number) => {
     this.input.focus()
-    const restored = this.props.options[this.props.options.length - cursor]
-    const filtered = this.state.input.split(' ').filter(word => word !== restored)
+    const keywords = this.state.input.split(/[\s\u3000]/)
+    const restored = this.props.choices[this.props.choices.length - cursor]
+    const filtered = keywords.filter(word => word !== restored)
 
     this.setState({
       cursor,
-      input: (filtered.length < this.state.input.split(' ').length
-        ? filtered.join(' ')
-        : filtered.concat(restored).join(' ')
-      ) + ' ',
+      input: `${filtered.length < keywords.length ? filtered.join(' ') : filtered.concat(restored).join(' ')} `,
     })
   }
 
