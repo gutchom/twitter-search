@@ -4,7 +4,18 @@ const webpack = require('webpack')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const isDevelopment = (process.env.NODE_ENV === 'development')
 const isTesting = (process.env.NODE_ENV === 'test')
-const entries = __dirname + '/src/scripts/app/entries/'
+const dir = __dirname + '/src/scripts/app/entries/'
+const entry = glob
+  .sync('**/*.tsx', { cwd: dir, root: dir })
+  .reduce((entries, path) => {
+    return Object.assign(entries, { [path.slice(0, -'.tsx'.length)]: dir + path })
+  }, {
+    vendor: [
+      'axios',
+      'react',
+      'react-dom',
+    ]
+  })
 
 const combine = base => addition => (
   Object.keys(addition)
@@ -75,15 +86,18 @@ const test = combine(base)({
 })
 
 const common = combine(base)({
-  entry: glob
-    .sync('**/*.@(ts|tsx)', { cwd: entries, root: entries })
-    .reduce((list, path) => {
-      return Object.assign(list, { [path.split('.')[0]]: entries + path })
-    }, {}),
+  entry,
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'public/js'),
+    jsonpFunction: 'vendor',
   },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: Infinity,
+    }),
+  ],
   module: {
     rules: [
       {
