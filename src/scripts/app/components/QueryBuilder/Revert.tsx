@@ -94,7 +94,8 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
               決定
             </button>
           </div>
-        )}>
+        )}
+      >
         <ul className="history">
           {this.props.history.map((query, index0) => (
             <li className="history--group" key={index0}>

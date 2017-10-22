@@ -16,7 +16,7 @@ const RevertItem: React.SFC<RevertItemProps> = props => (
         className="checkbox"
         type="checkbox"
         checked={props.checked}
-        onClick={function() { props.onChange(props.position) }}
+        onChange={function() { props.onChange(props.position) }}
       />
       <Condition {...props.condition} />
     </label>
