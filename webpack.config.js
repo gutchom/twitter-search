@@ -73,12 +73,7 @@ const test = combine(base)({
         exclude: ['node_modules'],
         use: [
           { loader: 'babel-loader' },
-          {
-            loader: 'ts-loader',
-            options: {
-              configFile: path.resolve(__dirname, 'tsconfig.test.json'),
-            },
-          },
+          { loader: 'ts-loader' },
         ],
       },
     ],

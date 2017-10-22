@@ -25,8 +25,7 @@
     "./src/scripts/**/*"
   ],
   "exclude": [
-    "./node_modules",
-    "**/*.test.ts*"
+    "./node_modules"
   ],
   "compileOnSave": false,
   "atom": {

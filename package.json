@@ -10,7 +10,7 @@
     "url": "https://github.com/gutchom/observe-2ch-client"
   },
   "bugs": {
-    "url": "https://github.com/gutchom/assets-manifest/issues"
+    "url": "https://github.com/gutchom/observe-2ch-client/issues"
   },
   "engines": {
     "node": "^8.*",
@@ -29,7 +29,7 @@
     "build:script": "npm run script",
     "watch:image": "npm run image -- -w",
     "watch:style": "npm run style -- -w",
-    "watch:script": "npm run script -- -w",
+    "watch:script": "npm run script",
     "lint:style": "stylelint --fix ./src/styles/**/*.css",
     "lint:script": "tslint -p tsconfig.json  --type-check --fix ./src/{scripts,test}/**/*.{ts,tsx}",
     "server:mock": "cross-env PORT=${OBSERVE_2CH_PORT-3000} nodemon -w ./server ./server",
