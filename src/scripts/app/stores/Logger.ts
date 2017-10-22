@@ -20,13 +20,18 @@ export interface History<T> {
   readonly canRedo: boolean
   readonly all: T[]
   depth: number
-  jump(stamp: string): boolean
+  jump(stamp: string): number
   undo(steps: number): T
   redo(steps: number): T
   load(depth: number): T
   save(data: T): this
   empty(): this
   restore(): boolean
+}
+
+export interface LoggerOption {
+  range?: number
+  duration?: number
 }
 
 /**
@@ -47,14 +52,9 @@ export default class Logger<T> implements History<T> {
   private position = 0
   private history: Log[] = []
 
-  constructor(name: string, version: string, options?: { duration?: number, size?: number }) {
+  constructor(name: string, version: string, options?: LoggerOption) {
     this.key = prefix + name
     this.version = version
-
-    if (typeof options !== 'undefined') {
-      if (typeof options.size === 'number') { this.size = options.size }
-      if (typeof options.duration === 'number') { this.duration = options.duration }
-    }
 
     if (typeof localStorage === 'undefined') {
       this.hasStorage = false
@@ -66,6 +66,11 @@ export default class Logger<T> implements History<T> {
       } catch (err) {
         this.hasStorage = false
       }
+    }
+
+    if (typeof options !== 'undefined') {
+      if (typeof options.range === 'number') { this.size = options.range }
+      if (typeof options.duration === 'number') { this.duration = options.duration }
     }
   }
 
@@ -97,7 +102,7 @@ export default class Logger<T> implements History<T> {
     return this.length - this.cursor
   }
 
-  set depth(next) {
+  set depth(next: number) {
     this.cursor = this.length - next
   }
 
@@ -105,8 +110,8 @@ export default class Logger<T> implements History<T> {
     return this.position
   }
 
-  private set cursor(next) {
-    this.position = next >= this.length ? this.length - 1 : next >= 0 ? next : 0
+  private set cursor(next: number) {
+    this.position = next >= this.length ? this.length - 1 : next <= 0 ? 0 : next
   }
 
   undo(steps = 1): T {
@@ -117,10 +122,13 @@ export default class Logger<T> implements History<T> {
     return this.load(this.depth -= steps)
   }
 
-  jump(stamp: string): boolean {
+  jump(stamp: string): number {
     const index = this.history.findIndex(log => log.stamp === stamp)
+    if (index !== -1) {
+      this.cursor = index
+    }
 
-    return (index !== -1 && !!(this.cursor = index) || true)
+    return this.depth
   }
 
   /**
