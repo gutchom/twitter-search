@@ -55,7 +55,7 @@ describe('Logger.ts', function() {
     assert.deepEqual(logger.load(), data(1))
   })
 
-  it('restore data from LocalStrage', function() {
+  it('restore data from LocalStorage', function() {
     const logger = new Logger('storage', 'storage')
 
     logger.restore()
