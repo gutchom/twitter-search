@@ -16,7 +16,7 @@ const RevertItem: React.SFC<RevertItemProps> = props => {
 
   return (
     <li className="query-condition">
-      <label htmlFor="query-condition">
+      <label>
         <input
           className="checkbox"
           type="checkbox"
