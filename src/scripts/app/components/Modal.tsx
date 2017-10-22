@@ -1,7 +1,7 @@
 import React, { MouseEvent, ReactNode } from 'react'
 
 export interface ModalProps {
-  className?: string|string[]
+  className?: string
   header?: ReactNode
   footer?: ReactNode
   visible: boolean
@@ -11,15 +11,6 @@ export interface ModalProps {
 export default class Modal extends React.Component<ModalProps, {}> {
   content: HTMLDivElement
   rootScrollPosition: number
-
-  classNames(...names: string[]): string[] {
-    return names
-      .concat(typeof this.props.className === 'string'
-        ? this.props.className.split(' ')
-        : this.props.className instanceof Array
-          ? this.props.className : [])
-      .filter(name => name.length > 0)
-  }
 
   componentDidMount() {
     window.addEventListener('touchmove', this.preventBehindScroll)
@@ -83,7 +74,7 @@ export default class Modal extends React.Component<ModalProps, {}> {
 
   render() {
     return (
-      <div className={this.classNames('modal', this.props.visible ? 'visible' : '').join(' ')}>
+      <div className={`modal ${this.props.className ? this.props.className : ''} ${this.props.visible ? 'visible' : ''}`}>
         <div className="modal--window">
           <div className="modal--content" ref={this.ref}>
             {this.props.header && <div className="modal--spacer"/>}
