@@ -39,7 +39,7 @@ const base = {
   ],
   resolve: {
     modules: ['node_modules'],
-    extensions: ['.ts', '.tsx', '.js', 'jsx', 'json'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     alias: {
       app: path.resolve(__dirname, 'src/scripts/app'),
     },
@@ -58,7 +58,7 @@ const test = combine(base)({
       compress: true,
       parallel: {
         cache: true,
-        workers: 4
+        workers: 4,
       },
       output: {
         comments: true,
@@ -127,7 +127,7 @@ const development = combine(common)({
       compress: true,
       parallel: {
         cache: true,
-        workers: 4
+        workers: 4,
       },
       output: {
         comments: true,
@@ -145,7 +145,7 @@ const production = combine(common)({
       compress: true,
       parallel: {
         cache: true,
-        workers: 4
+        workers: 4,
       },
       output: {
         comments: false,

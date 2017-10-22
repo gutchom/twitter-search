@@ -43,7 +43,6 @@
     "normalize.css": "^7.0.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "typescript": "^2.5.3",
     "url-search-params-polyfill": "^2.0.1"
   },
   "devDependencies": {
@@ -52,7 +51,7 @@
     "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.46",
     "@types/power-assert": "^1.4.29",
-    "@types/react": "^16.0.15",
+    "@types/react": "^16.0.16",
     "@types/react-dom": "^16.0.2",
     "@types/sinon": "^2.3.6",
     "@types/tween.js": "16.9.0",
@@ -66,6 +65,7 @@
     "babel-preset-power-assert": "^1.0.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "body-parser": "^1.18.2",
     "browser-sync": "^2.18.13",
     "caniuse-lite": "^1.0.30000748",
     "case-sensitive-paths-webpack-plugin": "^2.1.1",
@@ -105,8 +105,9 @@
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
     "stylelint-order": "^0.7.0",
-    "ts-loader": "^3.0.3",
-    "tslint": "5.7.0",
+    "ts-loader": "^3.0.5",
+    "tslint": "5.8.0",
+    "typescript": "^2.5.3",
     "uglify-js": "^3.1.4",
     "webpack": "^3.8.1"
   },

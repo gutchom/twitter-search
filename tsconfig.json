@@ -13,19 +13,20 @@
     "importHelpers": true,
     "baseUrl": "./src/scripts",
     "typeRoots" : [
+      "types",
       "./node_modules/@types"
     ],
     "paths": {
-      "*": [
-        "app/*",
-        "*"
-      ]
+      "*": ["*"],
+      "app": ["./src/scripts/app"]
     }
   },
+  "include": [
+    "./src/scripts/**/*"
+  ],
   "exclude": [
     "./node_modules",
-    "**/*.test.ts",
-    "**/*.test.tsx"
+    "**/*.test.ts*"
   ],
   "compileOnSave": false,
   "atom": {
