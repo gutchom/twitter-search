@@ -1,3 +1,5 @@
+import equal from 'app/lib/equal'
+
 Array.prototype.dedupe = function dedupe<T>(comparison?: ((val1: T, val2: T) => boolean)): T[] {
   return this.filter(
     (val1: T, index: number, self: T[]) => typeof comparison === 'function'
@@ -20,10 +22,6 @@ Array.prototype.sortByKey =  function sortByKey<T>(...key: string[]): T[] {
   }
 
   return this.sort((a: T, b: T) => (a = key.reduce(refer, a) as any) < (b = key.reduce(refer, b) as any) ? -1 : a > b ? 1 : 0)
-}
-
-export function equal<T>(a: T, b: T): boolean {
-  return typeof a === 'object' ? Object.keys(a).every(<K extends keyof T>(key: K) => equal(a[key], b[key])) : a === b
 }
 
 export function refer<T, K extends keyof T>(variable: T, property: K): T[K] {

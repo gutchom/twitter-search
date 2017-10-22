@@ -1,4 +1,5 @@
 import React from 'react'
+import equal from 'app/lib/equal'
 import Modal from 'app/components/Modal'
 import Logger from 'app/stores/Logger'
 import RevertItem from './RevertItem'
@@ -41,7 +42,7 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
   }
 
   handleChange = (position: Position) => {
-    const filtered = this.state.selected.filter(old => !(position[0] === old[0] && position[1] === old[1]))
+    const filtered = this.state.selected.filter(old => !equal(old, position))
     const selected = filtered.length < this.state.selected.length ? filtered : filtered.concat([position])
 
     this.logger.save(selected)
@@ -99,8 +100,7 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
                 {query.map((condition, index1) =>
                   <RevertItem
                     key={index1}
-                    checked={-1 !== this.state.selected.findIndex(selected =>
-                      selected[0] === index0 && selected[1] === index1)}
+                    checked={-1 !== this.state.selected.findIndex(selected => equal(selected, [index0, index1]))}
                     position={[index0, index1]}
                     condition={condition}
                     onChange={this.handleChange}
