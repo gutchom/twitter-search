@@ -1,4 +1,4 @@
-interface UserInfo {
+interface LoginUser {
   uid: number
   user_name: string
   display_name: string
@@ -6,5 +6,6 @@ interface UserInfo {
 }
 
 interface Window {
-  userInfo: UserInfo
+  account: LoginUser
 }
+
