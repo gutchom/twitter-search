@@ -18,6 +18,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   kanaInput = false
   input: HTMLInputElement
   drawer: HTMLUListElement
+
   state = {
     isDrawerOpen: false,
     cursor: 0,
@@ -27,10 +28,9 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   get cursor(): number { return this.state.cursor }
 
   set cursor(next: number) {
-    const length = this.props.choices.length
-    const cursor = next > length ? length : next > 0 ? next : 0
+    const cursor = next > this.props.choices.length ? this.props.choices.length : next > 0 ? next : 0
 
-    if (length > 0 && cursor > 1) {
+    if (this.props.choices.length > 0 && cursor > 1) {
       const item = this.drawer.children[cursor - 1] as HTMLLIElement
       const positionBottom = item.offsetTop + item.offsetHeight - this.drawer.offsetHeight
 
@@ -42,7 +42,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
       }
     }
 
-    this.setState({ cursor, isDrawerOpen: length > 0 && cursor > 0 })
+    this.setState({ cursor, isDrawerOpen: this.props.choices.length > 0 && cursor > 0 })
   }
 
   componentDidMount() {
@@ -73,26 +73,26 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    this.kanaInput = e.keyCode === 229 ? true : this.kanaInput && e.keyCode !== 13 && e.keyCode !== 27
+    this.kanaInput = e.keyCode === 229 || this.kanaInput && e.key !== 'Enter' && e.key !== 'Escape'
 
     if (!this.kanaInput) {
-      switch (e.keyCode) {
-        case 13: // Enter
-        case 27: // Escape
+      switch (e.key) {
+        case 'Enter':
+        case 'Escape':
           this.input.blur()
           break
 
-        case 32: // Space
+        case 'Space':
           if (this.cursor > 0) {
-            this.handleDrawerClick(this.cursor)
+            this.handleDrawerChange(this.cursor)
           }
           break
 
-        case 38: // ArrowUp
+        case 'ArrowUp':
           this.cursor--
           break
 
-        case 40: // ArrowDown
+        case 'ArrowDown':
           this.cursor++
           break
 
@@ -102,7 +102,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     }
   }
 
-  handleDrawerClick = (cursor: number) => {
+  handleDrawerChange = (cursor: number) => {
     this.input.focus()
     const keywords = this.state.input.split(/[\s\u3000]/)
     const restored = this.props.choices[this.props.choices.length - cursor]
@@ -123,20 +123,23 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   render() {
     return (
       <div className="query-input">
-        <input className="textinput" placeholder="スペース区切りで複数入力"
-               value={this.state.input}
-               onChange={this.handleInputChange}
-               onFocus={this.handleInputFocus}
-               onBlur={this.handleInputBlur}
-               onKeyDown={this.handleInputKeyDown}
-               ref={this.inputRefs} />
-
-        <Drawer refs={this.drawerRefs}
-                visible={this.state.isDrawerOpen}
-                options={[...this.props.options].reverse()}
-                selected={this.state.input.split(' ')}
-                focusing={this.state.cursor}
-                onClick={this.handleDrawerClick} />
+        <input
+          className="textinput" placeholder="スペース区切りで複数入力"
+          value={this.state.input}
+          onBlur={this.handleInputBlur}
+          onFocus={this.handleInputFocus}
+          onChange={this.handleInputChange}
+          onKeyDown={this.handleInputKeyDown}
+          ref={this.inputRefs}
+        />
+        <Drawer
+          refs={this.drawerRefs}
+          visible={this.state.isDrawerOpen}
+          options={[...this.props.choices].reverse()}
+          selected={this.state.input.split(/[\s\u3000]/)}
+          focusing={this.state.cursor}
+          onChange={this.handleDrawerChange}
+        />
       </div>
     )
   }

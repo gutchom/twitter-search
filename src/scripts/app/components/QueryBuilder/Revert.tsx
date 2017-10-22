@@ -94,10 +94,10 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
           </div>
         )}>
         <ul className="history">
-          {this.props.history.map((query, index0) =>
+          {this.props.history.map((query, index0) => (
             <li className="history--group" key={index0}>
               <ul>
-                {query.map((condition, index1) =>
+                {query.map((condition, index1) => (
                   <RevertItem
                     key={index1}
                     checked={-1 !== this.state.selected.findIndex(selected => equal(selected, [index0, index1]))}
@@ -105,10 +105,10 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
                     condition={condition}
                     onChange={this.handleChange}
                   />
-                )}
+                ))}
               </ul>
             </li>
-          )}
+          ))}
         </ul>
       </Modal>
     )

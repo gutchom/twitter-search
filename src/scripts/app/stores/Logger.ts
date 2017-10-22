@@ -124,23 +124,23 @@ export default class Logger<T> implements History<T> {
   }
 
   /**
-   * @param {number} depth - 1 <= depth <= this.length
+   * @param {number} depth - from 1 to this.length
    * @returns {T}
    */
   load(depth = this.depth): T {
     if (this.length === 0) {
       throw new Error(`Logger "${this.name}" has no history.`)
-    } else {
-      return JSON.parse(this.history[this.length - depth].data)
     }
+
+    return JSON.parse(this.history[this.length - depth].data)
   }
 
   save(data: T): this {
     this.history = this.history
-      .slice(-this.size - this.depth, this.cursor + 1)
+      .slice(this.cursor - this.size + 1, this.cursor + 1)
       .concat({
         data: JSON.stringify(data),
-        stamp: Date.now().toString(10) + this.history.length.toString(10),
+        stamp: Date.now().toString(10) + this.length.toString(10),
       })
 
     this.depth = 1
@@ -151,7 +151,7 @@ export default class Logger<T> implements History<T> {
         history: this.history,
         version: this.version,
         timestamp: Date.now(),
-      } as Archive))
+      }))
     }
 
     return this

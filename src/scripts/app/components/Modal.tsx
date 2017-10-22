@@ -44,13 +44,12 @@ export default class Modal extends React.Component<ModalProps, {}> {
   }
 
   preventBehindScroll = (e: TouchEvent) => {
-    const scrollTop = this.content.scrollTop
     const bottom = this.content.scrollHeight - this.content.clientHeight
 
     if (this.props.visible) {
       if (isModal(e.target, this.root)) {
         e.stopPropagation()
-      } else if (scrollTop === 0 || scrollTop === bottom) {
+      } else if (this.content.scrollTop === 0 || this.content.scrollTop === bottom) {
         e.preventDefault()
       }
     }
@@ -84,17 +83,17 @@ export default class Modal extends React.Component<ModalProps, {}> {
     return (
       <div ref={this.rootRef} className={`modal ${this.props.className ? this.props.className : ''} ${this.props.visible ? 'visible' : ''}`}>
         <div className="modal--window">
-            {this.props.header && <div className="modal--spacer"/>}
           <div className="modal--content" ref={this.contentRef}>
+            {this.props.header && <div className="modal--spacer" />}
 
             {this.props.children}
 
-            {this.props.footer && <div className="modal--spacer"/>}
+            {this.props.footer && <div className="modal--spacer" />}
           </div>
           {this.props.header && <header>{this.props.header}</header>}
           {this.props.footer && <footer>{this.props.footer}</footer>}
           <button className="modal--close" onClick={this.handleCloseClick}>
-            <i className="fa fa-close"/>
+            <i className="fa fa-times" aria-hidden="true" />
           </button>
         </div>
       </div>
