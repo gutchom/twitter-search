@@ -21,7 +21,7 @@ export interface QueryExpressionState {
 }
 
 export default class QueryExpression extends React.Component<{}, QueryExpressionState> {
-  logger = new Logger<QueryCondition[]>('query', '1.5', { range: 20 })
+  logger = new Logger<QueryCondition[]>('query', 1.5, { range: 20, useStorage: true })
   queryId = 0
 
   constructor(props: {}) {

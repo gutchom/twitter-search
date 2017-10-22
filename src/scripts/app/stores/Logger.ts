@@ -1,14 +1,14 @@
 const prefix = 'history-'
 
-export interface Log {
+interface Log {
   data: string
   stamp: string
 }
 
-export interface Archive {
+interface Archive {
   depth: number
   history: Log[]
-  version: string
+  version: number
   timestamp: number
 }
 
@@ -29,30 +29,33 @@ export interface History<T> {
   restore(): boolean
 }
 
-export interface LoggerOption {
+type LoggerOption = {
   range?: number
   duration?: number
+  useStorage?: boolean
 }
 
 /**
  * @classdesc State logger with a traversable history
  * @constructor
- * @param {string} name - unique key within "Local Storage"
- * @param {string} version - identifier of log format
+ * @param {string} name - unique key within LocalStorage
+ * @param {string} version - version of log format
  * @param {Object} options
- * @param {number} options.size - max length of history
- * @param {number} options.duration - hours to keep history on LocalStorage
+ * @param {number} Infinity options.range - max length of history
+ * @param {number} Infinity options.duration - hours to keep history on LocalStorage
+ * @param {boolean} false options.useStorage
  */
 export default class Logger<T> implements History<T> {
   private key: string
-  private version: string
-  private size = Infinity
+  private version: number
+  private range = Infinity
   private duration = Infinity
   private hasStorage = false
+  private useStorage = false
   private position = 0
   private history: Log[] = []
 
-  constructor(name: string, version: string, options?: LoggerOption) {
+  constructor(name: string, version: number, options?: LoggerOption) {
     this.key = prefix + name
     this.version = version
 
@@ -68,8 +71,9 @@ export default class Logger<T> implements History<T> {
       }
     }
 
-    if (typeof options !== 'undefined') {
-      if (typeof options.range === 'number') { this.size = options.range }
+    if (typeof options === 'object') {
+      if (options.useStorage) { this.useStorage = options.useStorage }
+      if (typeof options.range === 'number') { this.range = options.range }
       if (typeof options.duration === 'number') { this.duration = options.duration }
     }
   }
@@ -115,10 +119,16 @@ export default class Logger<T> implements History<T> {
   }
 
   undo(steps = 1): T {
+    if (!this.canUndo) {
+      throw new RangeError(`Logger "${this.name}" cannot undo any more.`)
+    }
     return this.load(this.depth += steps)
   }
 
   redo(steps = 1): T {
+    if (!this.canUndo) {
+      throw new RangeError(`Logger "${this.name}" cannot redo any more.`)
+    }
     return this.load(this.depth -= steps)
   }
 
@@ -131,13 +141,12 @@ export default class Logger<T> implements History<T> {
     return this.depth
   }
 
-  /**
-   * @param {number} depth - from 1 to this.length
-   * @returns {T}
-   */
   load(depth = this.depth): T {
     if (this.length === 0) {
-      throw new Error(`Logger "${this.name}" has no history.`)
+      throw new RangeError(`Logger "${this.name}" has no history.`)
+    }
+    if (depth > this.length || depth < 0) {
+      throw new RangeError(`Depth should be in  to ${this.length}`)
     }
 
     return JSON.parse(this.history[this.length - depth].data)
@@ -145,7 +154,7 @@ export default class Logger<T> implements History<T> {
 
   save(data: T): this {
     this.history = this.history
-      .slice(this.cursor - this.size + 1, this.cursor + 1)
+      .slice(this.cursor - this.range, this.cursor + 1)
       .concat({
         data: JSON.stringify(data),
         stamp: Date.now().toString(10) + this.length.toString(10),
@@ -153,7 +162,7 @@ export default class Logger<T> implements History<T> {
 
     this.depth = 1
 
-    if (this.hasStorage) {
+    if (this.useStorage && this.hasStorage) {
       localStorage.setItem(this.key, JSON.stringify({
         depth: this.depth,
         history: this.history,
@@ -181,13 +190,17 @@ export default class Logger<T> implements History<T> {
 
     const archive = JSON.parse(json) as Archive
 
-    if (archive.version !== this.version || Date.now() - archive.timestamp > this.duration * 60 * 60 * 1000) {
+    if (this.version < archive.version) {
+      return false
+    }
+
+    if (this.version > archive.version || Date.now() - archive.timestamp > this.duration * 60 * 60 * 1000) {
       localStorage.removeItem(this.key)
 
       return false
     }
 
-    this.history = archive.history.slice(-this.size)
+    this.history = archive.history.slice(-this.range)
     this.depth = archive.depth
 
     return true

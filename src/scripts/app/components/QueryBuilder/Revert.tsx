@@ -19,7 +19,7 @@ export interface HistoryState {
 }
 
 export default class Revert extends React.Component<HistoryProps, HistoryState> {
-  logger = new Logger<number[][]>('revert-selected', '1.0', { duration: 0 })
+  logger = new Logger<number[][]>('revert-selected', 1.0)
   positions: Position[]
   state = {
     selected: ([] as Position[]),
