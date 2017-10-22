@@ -209,7 +209,7 @@
     transition: var(--duration-middle);
     z-index: 10;
 
-    &.query-input--drawer--visible {
+    &.visible {
       box-shadow: 0 3px 6px 3px var(--color-gray);
       max-height: 8em;
     }
@@ -240,7 +240,7 @@
         transition: var(--duration-quick);
         width: 100%;
 
-        &.focusing {
+        &.focus {
           border-color: var(--color-hover);
         }
       }

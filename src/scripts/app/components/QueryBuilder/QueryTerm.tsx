@@ -1,5 +1,6 @@
 import React, { ChangeEvent } from 'react'
 import SelectableInput from 'app/components/SelectableInput'
+import classes from 'app/lib/classNames'
 
 export type Operator = 'AND' | 'OR' | 'NOT'
 
@@ -68,7 +69,7 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
     return (
       <li className="query-expression--term">
         <div
-          className={`query-expression--confirm ${this.state.confirming ? 'query-expression--confirm--visible' : ''}`}
+          className={classes('query-expression--confirm', { visible: this.state.confirming })}
           tabIndex={0}
           onClick={this.handleCancelRemove}
           onKeyDown={this.handleCancelRemove}

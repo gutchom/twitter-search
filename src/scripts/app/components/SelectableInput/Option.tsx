@@ -1,4 +1,5 @@
 import React from 'react'
+import classes from 'app/lib/classNames'
 
 export interface OptionProps {
   text: string
@@ -18,7 +19,7 @@ const Option: React.SFC<OptionProps> = props => (
         checked={props.checked}
         onChange={function() { props.onChange(props.position) }}
       />
-      <div className={`query-input--option--container ${props.focusing ? 'focusing' : ''}`}>
+      <div className={classes('query-input--option--container', { focus: props.focusing })}>
         {props.text}
         </div>
     </label>

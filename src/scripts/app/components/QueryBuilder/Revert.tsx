@@ -1,8 +1,9 @@
 import React from 'react'
-import equal from 'app/lib/equal'
 import Modal from 'app/components/Modal'
 import Logger from 'app/stores/Logger'
 import RevertItem from './RevertItem'
+import equal from 'app/lib/equal'
+import classes from 'app/lib/classNames'
 import { QueryCondition } from './QueryTerm'
 
 type Position = number[]
@@ -83,14 +84,15 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
         header={<h1><i className="fa fa-clock-o"/>履歴</h1>}
         footer={(
           <div>
-            <button className={this.logger.canUndo ? 'enable' : ''} onClick={this.handleUndo}>
+            <button className={classes({ enable: this.logger.canUndo })} onClick={this.handleUndo}>
               <i className="fa fa-undo"/>
             </button>
-            <button className={this.logger.canRedo ? 'enable' : ''} onClick={this.handleRedo}>
+            <button className={classes({ enable: this.logger.canRedo })} onClick={this.handleRedo}>
               <i className="fa fa-repeat"/>
             </button>
-            <button className={'submit ' + (this.state.selected.length > 1 ? 'enable' : '')}
-                    onClick={this.handleSubmit}>決定</button>
+            <button className={classes('submit', { enable: this.state.selected.length })} onClick={this.handleSubmit}>
+              決定
+            </button>
           </div>
         )}>
         <ul className="history">

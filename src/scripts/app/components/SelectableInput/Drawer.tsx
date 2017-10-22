@@ -1,5 +1,6 @@
 import React from 'react'
 import Option from './Option'
+import classes from 'app/lib/classNames'
 
 export interface DrawerProps {
   visible: boolean
@@ -11,7 +12,7 @@ export interface DrawerProps {
 }
 
 const Drawer: React.SFC<DrawerProps> = props => (
-  <ul ref={props.refs} className={`query-input--drawer ${props.visible ? 'query-input--drawer--visible' : ''}`}>
+  <ul ref={props.refs} className={classes('query-input--drawer', { visible: props.visible })}>
     {props.options.map((option, index) => (
       <Option
         key={option}
