@@ -108,7 +108,7 @@
     width: 96%;
     z-index: 200;
 
-    &.visible {
+    &.query-expression--confirm--visible {
       opacity: 1;
       visibility: visible;
     }
