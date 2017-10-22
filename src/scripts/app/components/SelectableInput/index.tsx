@@ -32,40 +32,26 @@ export default class SelectableInput extends React.Component<SelectableInputProp
 
     if (length > 0 && cursor > 1) {
       const item = this.drawer.children[cursor - 1] as HTMLLIElement
-      this.drawer.scrollTo(0, item.offsetTop + item.offsetHeight - this.drawer.offsetHeight)
-    } else {
-      this.drawer.scrollTo(0, 0)
+      const positionBottom = item.offsetTop + item.offsetHeight - this.drawer.offsetHeight
+
+      if (this.drawer.scrollTop < positionBottom) {
+        this.drawer.scrollTo(0, positionBottom)
+      }
+      if (this.drawer.scrollTop > item.offsetTop) {
+        this.drawer.scrollTo(0, item.offsetTop)
+      }
     }
 
     this.setState({ cursor, isDrawerOpen: length > 0 && cursor > 0 })
   }
 
   componentDidMount() {
-    this.input.addEventListener('click', this.handleInputClick)
-    this.props.focus && this.input.focus()
-  }
-
-  componentWillUnmount() {
-    document.body.removeEventListener('click', this.handleBodyClick)
-    this.input.removeEventListener('click', this.handleInputClick)
-  }
-
-  handleSubmit = (input = this.state.input, cursor = this.cursor, isDrawerOpen = false) => {
-    const keywords = input.split(/[\s\u3000]/).filter(phrase => phrase.length > 0)
-    this.setState({ input: `${keywords.join(' ')} `, cursor, isDrawerOpen })
-    this.props.onChange(keywords)
-  }
-
-  handleBodyClick = () => {
-    this.handleSubmit(this.state.input)
-  }
-
-  handleInputClick = (e: MouseEvent) => {
-    e.stopPropagation()
+    if (this.props.focus) {
+      this.input.focus()
+    }
   }
 
   handleInputFocus = (e: FocusEvent<HTMLInputElement>) => {
-    document.body.addEventListener('click', this.handleBodyClick)
     this.setState({
       isDrawerOpen: true,
       input: e.currentTarget.value,
@@ -73,14 +59,16 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleInputBlur = () => {
-    document.body.removeEventListener('click', this.handleBodyClick)
-    this.handleSubmit()
+    const keywords = this.state.input.split(/[\s\u3000]/).filter(phrase => phrase.length > 0)
+    const input = keywords.length > 0 ? keywords.join(' ') + ' ' : keywords.join(' ')
+
+    this.setState({ input, isDrawerOpen: false })
+    this.props.onChange(keywords)
   }
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       input: e.target.value,
-      cursor: 0,
     })
   }
 
@@ -119,11 +107,9 @@ export default class SelectableInput extends React.Component<SelectableInputProp
     const keywords = this.state.input.split(/[\s\u3000]/)
     const restored = this.props.choices[this.props.choices.length - cursor]
     const filtered = keywords.filter(word => word !== restored)
+    const input = filtered.length < keywords.length ? filtered.join(' ') : filtered.concat(restored).join(' ')
 
-    this.setState({
-      cursor,
-      input: `${filtered.length < keywords.length ? filtered.join(' ') : filtered.concat(restored).join(' ')} `,
-    })
+    this.setState({ input })
   }
 
   inputRefs = (el: HTMLInputElement) => {
