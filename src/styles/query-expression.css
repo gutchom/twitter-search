@@ -103,7 +103,7 @@
     margin: auto;
     opacity: 0;
     position: absolute;
-    transition: var(--duration-quick);
+    transition: var(--duration-slow);
     visibility: hidden;
     width: 96%;
     z-index: 200;
@@ -209,7 +209,7 @@
     transition: var(--duration-middle);
     z-index: 10;
 
-    &.visible {
+    &.query-input--drawer--visible {
       box-shadow: 0 3px 6px 3px var(--color-gray);
       max-height: 8em;
     }
@@ -292,7 +292,7 @@
   }
 }
 
-.history--item {
+.history--group {
   border-bottom: 3px solid var(--color-gray);
   padding: 0 6px;
 }

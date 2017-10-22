@@ -11,7 +11,7 @@ export interface DrawerProps {
 }
 
 const Drawer: React.SFC<DrawerProps> = props => (
-  <ul ref={props.refs} className={`query-input--drawer ${props.visible ? 'visible' : ''}`}>
+  <ul ref={props.refs} className={`query-input--drawer ${props.visible ? 'query-input--drawer--visible' : ''}`}>
     {props.options.map((option, index) => (
       <Option
         key={option}
