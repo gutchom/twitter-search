@@ -20,21 +20,20 @@ export interface HistoryState {
 export default class Revert extends React.Component<HistoryProps, HistoryState> {
   logger = new Logger<number[][]>('revert-selected', '1.0', { duration: 0 })
   positions: Position[]
+  state = {
+    selected: ([] as Position[]),
+  }
 
   constructor(props: HistoryProps) {
     super(props)
 
-    this.logger.save([[]])
-    this.state = {
-      selected: ([[]] as Position[]),
-    }
-
+    this.logger.save([])
   }
 
   componentWillReceiveProps(nextProps: HistoryProps) {
     if (nextProps.visible && !this.props.visible) {
-      this.logger.empty().save([[]])
-      this.setState({ selected: [[]]})
+      this.logger.empty().save([])
+      this.setState({ selected: []})
     }
 
     this.positions = this.props.history
@@ -62,15 +61,15 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
   }
 
   handleSubmit = () => {
-    if (this.state.selected.length > 1) {
+    if (this.state.selected.length > 0) {
       const query = this.state.selected
-        .slice(1)
+        .slice(0)
         .sort((a, b) => a[1] - b[1])
         .sort((a, b) => a[0] - b[0])
         .map(pos => this.props.history[pos[0]][pos[1]])
 
-      this.setState({ selected: [[]] })
-      this.logger.empty().save([[]])
+      this.setState({ selected: [] })
+      this.logger.empty().save([])
       this.props.onSubmit(query)
     }
   }
