@@ -9,6 +9,7 @@ export interface ModalProps {
 }
 
 export default class Modal extends React.Component<ModalProps, {}> {
+  root: HTMLDivElement
   content: HTMLDivElement
   rootScrollPosition: number
 
@@ -47,17 +48,20 @@ export default class Modal extends React.Component<ModalProps, {}> {
     const bottom = this.content.scrollHeight - this.content.clientHeight
 
     if (this.props.visible) {
-      if (isModal(e.currentTarget as HTMLElement|Window)) {
+      if (isModal(e.target, this.root)) {
         e.stopPropagation()
       } else if (scrollTop === 0 || scrollTop === bottom) {
         e.preventDefault()
       }
     }
 
-    function isModal(el: HTMLElement|Window) {
-      while (el instanceof HTMLElement && el.parentElement !== null) {
-        if (el.classList.contains('modal')) { return true }
-        el = el.parentElement
+    function isModal(target: EventTarget, ref: HTMLDivElement): boolean {
+      if (target instanceof HTMLElement) {
+        if (target === ref) {
+          return true
+        } else if (target.parentElement) {
+          return isModal(target.parentElement, ref)
+        }
       }
       return false
     }
@@ -68,16 +72,20 @@ export default class Modal extends React.Component<ModalProps, {}> {
     this.props.onClose(e)
   }
 
-  ref = (el: HTMLDivElement) => {
+  rootRef = (el: HTMLDivElement) => {
+    this.root = el
+  }
+
+  contentRef = (el: HTMLDivElement) => {
     this.content = el
   }
 
   render() {
     return (
-      <div className={`modal ${this.props.className ? this.props.className : ''} ${this.props.visible ? 'visible' : ''}`}>
+      <div ref={this.rootRef} className={`modal ${this.props.className ? this.props.className : ''} ${this.props.visible ? 'visible' : ''}`}>
         <div className="modal--window">
-          <div className="modal--content" ref={this.ref}>
             {this.props.header && <div className="modal--spacer"/>}
+          <div className="modal--content" ref={this.contentRef}>
 
             {this.props.children}
 
