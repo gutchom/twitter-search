@@ -6,33 +6,61 @@ import Modal from 'app/components/Modal'
 
 Enzyme.configure({ adapter: new Adapter() })
 
-let isOpen = true
-function handleCancel() { isOpen = false }
-
 describe('Modal.tsx', function () {
-  it('has children component', function () {
-    const wrapper = mount(<Modal visible={isOpen} onClose={handleCancel}><p>Sample text.</p><p>Sample text.</p></Modal>)
+  it('should have children', function () {
+    const wrapper = mount(
+      <Modal
+        visible={true}
+        onClose={() => {}}
+      >
+        <p>Sample text.</p><p>Sample text.</p>
+      </Modal>)
 
-    assert.strictEqual(wrapper.find('p').length, 2)
+    assert(wrapper.find('.modal--content').children().find('p').length === 2)
   })
 
-  it('has header component', function () {
+  it('should have header', function () {
+    const header = <span>header</span>
     const wrapper = mount(
-      <Modal visible={isOpen}
-             onClose={handleCancel}
-             header={<span>header</span>}>
-        <p>Sample text.</p></Modal>)
+      <Modal
+        visible={true}
+        onClose={() => {}}
+        header={header}
+      >
+        <p>Sample text.</p>
+      </Modal>)
 
-    assert.strictEqual(wrapper.find('header').length, 1)
+    assert(wrapper.containsMatchingElement(header))
   })
 
-  it('has footer component', function () {
+  it('should have footer', function () {
+    const footer = <span>footer</span>
     const wrapper = mount(
-      <Modal visible={isOpen}
-             onClose={handleCancel}
-             footer={<span>footer</span>}>
-        <p>Sample text.</p></Modal>)
+      <Modal
+        visible={true}
+        onClose={() => {}}
+        footer={footer}
+      >
+        <p>Sample text.</p>
+      </Modal>)
 
-    assert.strictEqual(wrapper.find('footer').length, 1)
+    assert(wrapper.containsMatchingElement(footer))
+  })
+
+  it('should switch class name', function () {
+    let isOpen = true
+    const wrapper = mount(
+      <Modal
+        visible={isOpen}
+        onClose={() => { wrapper.setProps({ visible: isOpen = !isOpen }) }}
+      >
+        <p>Sample text.</p><p>Sample text.</p>
+      </Modal>)
+
+    assert(wrapper.getDOMNode().classList.contains('modal--visible'))
+
+    wrapper.find('.modal--close').simulate('click')
+
+    assert(!wrapper.getDOMNode().classList.contains('modal--visible'))
   })
 })

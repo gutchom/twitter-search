@@ -9,6 +9,7 @@ Enzyme.configure({ adapter: new Adapter() })
 describe('QueryBuilder.tsx', () => {
   it('should have a default QueryTerm', () => {
     const wrapper = shallow(<QueryBuilder />)
+
     assert.strictEqual(wrapper.find('QueryTerm').length, 1)
   })
 })

@@ -11,10 +11,13 @@ function handleChange(keywords: string[]): void {}
 describe('SelectableInput.tsx', () => {
   it('has correct default text', () => {
     const defaults = ['foo', 'bar']
-    const wrapper = mount(<SelectableInput defaults={defaults}
-                                           focus={true}
-                                           options={defaults}
-                                           onChange={handleChange} />)
+    const wrapper = mount(
+      <SelectableInput
+        defaults={defaults}
+        focus={true}
+        choices={defaults}
+        onChange={handleChange}
+      />)
 
     assert.strictEqual(wrapper.state('input'), defaults.join(' '))
   })
