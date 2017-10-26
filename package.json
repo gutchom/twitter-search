@@ -17,24 +17,20 @@
     "npm": "^5.*"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=development npm-run-all --silent -s clean -p watch:* server:*",
+    "start": "cross-env NODE_ENV=development run-p -s server:** 'build:** -- -w'",
     "test": "cross-env NODE_ENV=test karma start",
-    "testing": "npm run test -- --auto-watch --no-single-run",
-    "image": "cpx './src/images/**/*.{jpg,png,gif,svg}' './public/img'",
-    "style": "postcss ./src/styles/pages/**/*.css -b ./src/styles/pages -d ./public/css",
-    "script": "webpack --progress",
-    "build": "cross-env NODE_ENV=production npm-run-all lint:* test clean build:*",
-    "build:image": "npm run image",
-    "build:style": "npm run style -- --no-map",
-    "build:script": "npm run script",
-    "watch:image": "npm run image -- -w",
-    "watch:style": "npm run style -- -w",
-    "watch:script": "npm run script",
+    "testing": "npm t -- --auto-watch --no-single-run",
+    "build": "cross-env NODE_ENV=production run-s lint:** test clean build:**",
+    "build:image": "cpx ./src/images/**/* ./public/img",
+    "build:style": "postcss ./src/styles/pages/**/*.css -b ./src/styles/pages -d ./public/css",
+    "build:script": "webpack --progress",
+    "lint": "run-p lint:**",
     "lint:style": "stylelint --fix ./src/styles/**/*.css",
     "lint:script": "tslint -p tsconfig.json --fix ./src/**/*.ts*",
     "server:mock": "cross-env PORT=${OBSERVE_2CH_PORT-3000} nodemon -w ./server ./server",
     "server:sync": "browser-sync start -b 'google chrome' -f ./public -p localhost:${OBSERVE_2CH_PORT-3000} --port ${OBSERVE_2CH_SYNC-3333}",
-    "clean": "rimraf ./public && mkdirp ./public/js ./public/css ./public/img"
+    "postclean": "mkdirp ./public/js ./public/css ./public/img",
+    "clean": "rimraf ./public"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^17.1.1",

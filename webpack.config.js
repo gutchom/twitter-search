@@ -130,7 +130,6 @@ const development = combine(common)({
       },
     }),
   ],
-  watch: true,
 })
 
 const production = combine(common)({
