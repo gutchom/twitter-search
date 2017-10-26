@@ -8,11 +8,11 @@
   --query-input-base-width: 320px;
 }
 
-.query-expression {
+.query {
   padding-bottom: 36px;
 }
 
-.query-expression--term {
+.query--term {
   border-bottom: 1px solid var(--color-gray);
   margin: 0 6px;
   padding: 16px 6px 0;
@@ -79,7 +79,7 @@
     }
   }
 
-  & .query-expression--remove {
+  & .query--remove {
     border: 3px solid var(--color-gray);
     border-radius: 50%;
     display: inline-block;
@@ -98,10 +98,10 @@
     }
   }
 
-  & .query-expression--confirm {
+  & .query--confirm-deletion {
     background: rgba(192, 192, 192, 0.72);
     border-radius: var(--radius);
-    box-shadow: 0 0 12px 8px rgba(192, 192, 192, 0.72);
+    box-shadow: 0 0 10px 8px rgba(192, 192, 192, 0.72);
     height: 64%;
     margin: auto;
     opacity: 0;
@@ -116,7 +116,7 @@
       visibility: visible;
     }
 
-    & .query-expression--confirm--remove {
+    & .query--confirm-deletion--remove {
       background: var(--color-alert);
       border-radius: 50%;
       bottom: -50%;
@@ -133,11 +133,11 @@
   }
 }
 
-.query-expression--dashboard {
+.query--dashboard {
   padding: 8px 0;
   text-align: center;
 
-  & .query-expression--button {
+  & .query--button {
     border: 3px solid var(--color-gray);
     border-radius: 50%;
     display: inline-block;

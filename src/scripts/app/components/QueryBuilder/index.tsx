@@ -83,7 +83,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
 
   render() {
     return (
-      <main className="query-expression">
+      <main className="query">
         <Header icon="search" title="検索" />
         <ul>
           {...this.state.query.map((condition, index) =>
@@ -97,14 +97,14 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
               onRemove={this.handleQueryRemove}
             />
           )}
-          <li className="query-expression--dashboard">
-            <button className="query-expression--button" onClick={this.handleRevertClick}>
+          <li className="query--dashboard">
+            <button className="query--button" onClick={this.handleRevertClick}>
               <i className="fa fa-clock-o" />
             </button>
-            <button className="query-expression--button" onClick={this.handleAddClick}>
+            <button className="query--button" onClick={this.handleAddClick}>
               <i className="fa fa-plus" />
             </button>
-            <button className="query-expression--button" onClick={this.handleSearchClick}>
+            <button className="query--button" onClick={this.handleSearchClick}>
               <i className="fa fa-search" />
             </button>
           </li>

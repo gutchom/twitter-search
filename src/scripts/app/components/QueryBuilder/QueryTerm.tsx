@@ -67,19 +67,19 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
 
   render() {
     return (
-      <li className="query-expression--term">
+      <li className="query--term">
         <div
-          className={classes('query-expression--confirm', { visible: this.state.confirming })}
+          className={classes('query--confirm-deletion', { visible: this.state.confirming })}
           tabIndex={0}
           onClick={this.handleCancelRemove}
           onKeyDown={this.handleCancelRemove}
         >
-          <button className="query-expression--confirm--remove" onClick={this.handleRemove}>
+          <button className="query--confirm-deletion--remove" onClick={this.handleRemove}>
             <i className="fa fa-trash-o"/>
           </button>
         </div>
 
-        <button className="query-expression--remove" onClick={this.handleRemove}>
+        <button className="query--remove" onClick={this.handleRemove}>
           <i className="fa fa-trash-o"/>
         </button>
 
