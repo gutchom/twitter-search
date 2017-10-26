@@ -1,5 +1,5 @@
 @import "../commons/reset.css";
-@import "../commons/header.css";
+@import "../commons/layouts/header.css";
 @import "../commons/variables.css";
 @import "../modules/modal.css";
 
