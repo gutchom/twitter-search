@@ -87,17 +87,14 @@ export default class Modal extends React.Component<ModalProps, {}> {
     return (
       <div className={`modal ${this.props.className} ${this.props.visible ? 'modal--visible' : ''}`} ref={this.rootRef}>
         <div className="modal--window">
+          {this.props.header && <header>{this.props.header}</header>}
+          {this.props.footer && <footer>{this.props.footer}</footer>}
           <button className="modal--close" onClick={this.handleCloseClick}>
             <i className="fa fa-times" aria-hidden="true" />
           </button>
-
-          {this.props.header && <header>{this.props.header}</header>}
-
           <div className="modal--content" ref={this.contentRef}>
             {this.props.children}
           </div>
-
-          {this.props.footer && <footer>{this.props.footer}</footer>}
         </div>
       </div>
     )

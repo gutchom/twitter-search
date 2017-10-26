@@ -71,7 +71,6 @@
     height: var(--modal-bar-height);
     position: absolute;
     width: 100%;
-    z-index: 1;
   }
 
   & header {
@@ -82,6 +81,7 @@
   & footer {
     border-radius: 0 0 var(--radius-small) var(--radius-small);
     bottom: 0;
+    z-index: 1;
   }
 
   & header ~ .modal--content {
