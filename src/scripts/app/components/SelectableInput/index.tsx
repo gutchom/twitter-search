@@ -30,7 +30,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   set cursor(next: number) {
     const cursor = next > this.props.choices.length ? this.props.choices.length : next > 0 ? next : 0
 
-    if (this.props.choices.length > 0 && cursor > 1) {
+    if (this.props.choices.length > 0 && cursor > 0) {
       const item = this.drawer.children[cursor - 1] as HTMLLIElement
       const positionBottom = item.offsetTop + item.offsetHeight - this.drawer.offsetHeight
 
@@ -73,6 +73,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // code 229 means "Kana" input
     this.kanaInput = e.keyCode === 229 || this.kanaInput && e.key !== 'Enter' && e.key !== 'Escape'
 
     if (!this.kanaInput) {
@@ -82,8 +83,9 @@ export default class SelectableInput extends React.Component<SelectableInputProp
           this.input.blur()
           break
 
-        case 'Space':
+        case ' ':
           if (this.cursor > 0) {
+            e.preventDefault()
             this.handleDrawerChange(this.cursor)
           }
           break
@@ -137,7 +139,7 @@ export default class SelectableInput extends React.Component<SelectableInputProp
           visible={this.state.isDrawerOpen}
           options={[...this.props.choices].reverse()}
           selected={this.state.input.split(/[\s\u3000]/)}
-          focusing={this.state.cursor}
+          focusing={this.state.cursor - 1}
           onChange={this.handleDrawerChange}
         />
       </div>

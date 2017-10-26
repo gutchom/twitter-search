@@ -17,7 +17,7 @@ const Option: React.SFC<OptionProps> = props => (
         type="checkbox"
         tabIndex={-1}
         checked={props.checked}
-        onChange={function() { props.onChange(props.position) }}
+        onChange={function() { props.onChange(props.position + 1) }}
       />
       <div className={classes('query-input--option--container', { focus: props.focusing })}>
         {props.text}

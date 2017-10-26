@@ -18,8 +18,8 @@ const Drawer: React.SFC<DrawerProps> = props => (
         key={option}
         text={option}
         checked={-1 !== props.selected.findIndex(word => word === option)}
-        focusing={index + 1 === props.focusing}
-        position={index + 1}
+        focusing={index === props.focusing}
+        position={index}
         onChange={props.onChange}
       />
     ))}
