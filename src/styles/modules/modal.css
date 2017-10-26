@@ -52,6 +52,7 @@
     text-align: center;
     top: calc(24px * -0.5);
     width: 24px;
+    z-index: 5;
   }
 
   & .modal--content {
@@ -70,6 +71,7 @@
     height: var(--modal-bar-height);
     position: absolute;
     width: 100%;
+    z-index: 1;
   }
 
   & header {
@@ -78,10 +80,8 @@
   }
 
   & footer {
-    background: #fff;
     border-radius: 0 0 var(--radius-small) var(--radius-small);
     bottom: 0;
-    z-index: 1;
   }
 
   & header ~ .modal--content {
