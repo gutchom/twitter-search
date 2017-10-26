@@ -23,7 +23,7 @@
     "image": "cpx './src/images/**/*.{jpg,png,gif,svg}' './public/img'",
     "style": "postcss ./src/styles/pages/**/*.css -b ./src/styles/pages -d ./public/css",
     "script": "webpack --progress",
-    "build": "cross-env NODE_ENV=production npm-run-all --silent lint:* test clean build:*",
+    "build": "cross-env NODE_ENV=production npm-run-all lint:* test clean build:*",
     "build:image": "npm run image",
     "build:style": "npm run style -- --no-map",
     "build:script": "npm run script",
@@ -31,7 +31,7 @@
     "watch:style": "npm run style -- -w",
     "watch:script": "npm run script",
     "lint:style": "stylelint --fix ./src/styles/**/*.css",
-    "lint:script": "tslint -p tsconfig.json  --type-check --fix ./src/{scripts,test}/**/*.{ts,tsx}",
+    "lint:script": "tslint -p tsconfig.json --fix ./src/**/*.ts*",
     "server:mock": "cross-env PORT=${OBSERVE_2CH_PORT-3000} nodemon -w ./server ./server",
     "server:sync": "browser-sync start -b 'google chrome' -f ./public -p localhost:${OBSERVE_2CH_PORT-3000} --port ${OBSERVE_2CH_SYNC-3333}",
     "clean": "rimraf ./public && mkdirp ./public/js ./public/css ./public/img"
