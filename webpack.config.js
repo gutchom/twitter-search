@@ -2,24 +2,13 @@ const path = require('path')
 const glob = require('glob')
 const webpack = require('webpack')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+
 const isDevelopment = (process.env.NODE_ENV === 'development')
 const isTesting = (process.env.NODE_ENV === 'test')
-const dir = __dirname + '/src/scripts/app/entries/'
-const entry = glob
-  .sync('**/*.tsx', { cwd: dir, root: dir })
-  .reduce((entries, path) => {
-    return Object.assign(entries, { [path.slice(0, -'.tsx'.length)]: dir + path })
-  }, {
-    vendor: [
-      'axios',
-      'react',
-      'react-dom',
-    ]
-  })
 
 const combine = base => addition => (
-  Object.keys(addition)
-    .reduce((merged, key) => Object.assign({}, merged, {
+  Object.keys(addition).reduce((merged, key) => (
+    { ...merged,
       [key]: merged[key] === undefined
         ? addition[key]
         : merged[key] instanceof Array
@@ -80,8 +69,18 @@ const test = combine(base)({
   },
 })
 
+const dir = __dirname + '/src/scripts/app/entries/'
 const common = combine(base)({
-  entry,
+  entry: glob
+    .sync('**/*.tsx', { cwd: dir, root: dir })
+    .reduce((entries, path) => ({ ...entries, [path.split('.')[0]]: dir + path })
+    , {
+      vendor: [
+        'axios',
+        'react',
+        'react-dom',
+      ]
+    }),
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'public/js'),
