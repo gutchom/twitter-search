@@ -1,18 +1,15 @@
 import equal from 'app/lib/equal'
 
-Array.prototype.dedupe = function dedupe<T>(comparison?: ((val1: T, val2: T) => boolean)): T[] {
-  return this.filter(
-    (val1: T, index: number, self: T[]) => typeof comparison === 'function'
+Array.prototype.dedupe = function dedupe<T>(comparison?: ((val1: T, val2: T) => boolean)|string, ...key: string[]): T[] {
+  if (typeof comparison === 'string') {
+    key.unshift(comparison)
+  }
+  return (this as T[]).filter(
+    (val1, index, self) => typeof comparison === 'function'
       ? -1 > self.findIndex(val2 => comparison(val1, val2))
-      : index <= self.findIndex(val2 => equal(val1, val2))
-  )
-}
-
-Array.prototype.dedupeByKey = function dedupeByKey<T>(...key: string[]): T[] {
-  return this.filter(
-    (val1: T, index: number, self: T[]) => index <= self.findIndex(
-      val2 => key.reduce(refer, val1) === key.reduce(refer, val2)
-    )
+      : typeof comparison === 'string'
+        ? index <= self.findIndex(val2 => key.reduce(refer, val1) === key.reduce(refer, val2))
+        : index <= self.findIndex(val2 => equal(val1, val2))
   )
 }
 
