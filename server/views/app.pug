@@ -4,7 +4,7 @@ block style
   link(rel='stylesheet', type='text/css', href=`/assets/css/${name}.css`)
 
 block title
-  title Observe2ch Web - #{name}
+  title Observe2ch - #{name.charAt(0).toLocaleUpperCase() + name.slice(1)}
 
 block body
   #app-common
