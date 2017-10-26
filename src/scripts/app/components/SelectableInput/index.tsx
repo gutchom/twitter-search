@@ -59,10 +59,9 @@ export default class SelectableInput extends React.Component<SelectableInputProp
   }
 
   handleInputBlur = () => {
-    const keywords = this.state.input.split(/[\s\u3000]/).filter(phrase => phrase.length > 0)
-    const input = keywords.length > 0 ? keywords.join(' ') + ' ' : keywords.join(' ')
+    const keywords = this.state.input.split(/[\s\u3000]/).filter(keyword => keyword.length > 0)
 
-    this.setState({ input, isDrawerOpen: false })
+    this.setState({ input: keywords.join(' '), isDrawerOpen: false })
     this.props.onChange(keywords)
   }
 
@@ -97,19 +96,16 @@ export default class SelectableInput extends React.Component<SelectableInputProp
         case 'ArrowDown':
           this.cursor++
           break
-
-        default:
-          break
       }
     }
   }
 
   handleDrawerChange = (cursor: number) => {
     this.input.focus()
-    const keywords = this.state.input.split(/[\s\u3000]/)
-    const restored = this.props.choices[this.props.choices.length - cursor]
-    const filtered = keywords.filter(word => word !== restored)
-    const input = filtered.length < keywords.length ? filtered.join(' ') : filtered.concat(restored).join(' ')
+    const selected = this.props.choices[this.props.choices.length - cursor]
+    const current = this.state.input.split(/[\s\u3000]/)
+    const removed = current.filter(word => word !== selected)
+    const input = removed.concat(removed.length < current.length ? [] : selected).join(' ') + ' '
 
     this.setState({ input })
   }

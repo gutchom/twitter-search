@@ -17,7 +17,7 @@ const Drawer: React.SFC<DrawerProps> = props => (
       <Option
         key={option}
         text={option}
-        checked={-1 !== props.selected.findIndex(word => word === option)}
+        checked={-1 !== props.selected.lastIndexOf(option)}
         focusing={index === props.focusing}
         position={index}
         onChange={props.onChange}
