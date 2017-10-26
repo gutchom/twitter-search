@@ -1,4 +1,4 @@
-@import "./variables.css";
+@import "../commons/variables.css";
 
 :root {
   --modal-padding: 4vw;

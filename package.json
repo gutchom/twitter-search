@@ -21,7 +21,7 @@
     "test": "cross-env NODE_ENV=test karma start",
     "testing": "npm run test -- --auto-watch --no-single-run",
     "image": "cpx './src/images/**/*.{jpg,png,gif,svg}' './public/img'",
-    "style": "postcss ./src/styles/**/*.css -b ./src/styles -d ./public/css",
+    "style": "postcss ./src/styles/pages/**/*.css -b ./src/styles/pages -d ./public/css",
     "script": "webpack --progress",
     "build": "cross-env NODE_ENV=production npm-run-all --silent lint:* test clean build:*",
     "build:image": "npm run image",

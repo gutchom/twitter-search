@@ -1,4 +1,7 @@
-@import "./variables.css";
+@import "../commons/reset.css";
+@import "../commons/header.css";
+@import "../commons/variables.css";
+@import "../modules/modal.css";
 
 :root {
   --query-input-width: 96%;
