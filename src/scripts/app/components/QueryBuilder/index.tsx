@@ -5,17 +5,14 @@ import Revert from './Revert'
 import Header from 'app/components/Header'
 
 const defaultCondition: QueryCondition = {
+  id: 0,
+  focus: false,
   operator: 'OR',
   keywords: [],
 }
 
-interface Query extends QueryCondition {
-  id: number
-  focus: boolean
-}
-
 export interface QueryExpressionState {
-  query: Query[]
+  query: QueryCondition[]
   suggestions: string[]
   isHistoryOpen: boolean
 }
@@ -30,7 +27,7 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
     this.logger.restore()
 
     this.state = {
-      query: [{ ...defaultCondition, id: 0, focus: false }],
+      query: [defaultCondition],
       suggestions: this.suggestions,
       isHistoryOpen: false,
     }
@@ -39,10 +36,9 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   get suggestions(): string[] {
     return this.logger.length > 0
       ? this.logger.all
-        .reduce((pre: string[], nex) => pre.concat(...nex.map(({ keywords }) => keywords)), [])
-        .filter(keywords => keywords.length > 0)
-        .dedupe()
-        .slice(-20)
+        .reduce((keywords: string[], condition) => keywords.concat(...condition.map(({ keywords }) => keywords)), [])
+        .filter(keyword => keyword.length > 0)
+        .filter((keyword, index, self) => index === self.lastIndexOf(keyword))
       : []
   }
 
@@ -59,11 +55,12 @@ export default class QueryExpression extends React.Component<{}, QueryExpression
   }
 
   handleSearchClick = () => {
-    const query = this.state.query.filter(({ keywords }) => keywords.filter(phrase => phrase.length > 0).length > 0)
+    const query = this.state.query.filter(({ keywords }) => keywords.filter(keyword => keyword.length > 0).length > 0)
     if (query.length > 0) {
       this.logger.save(query)
       this.setState({ suggestions: this.suggestions })
     }
+    alert('検索条件を履歴に保存しました。\n検索結果の表示は開発中です。')
   }
 
   handleRevertClick = () => {

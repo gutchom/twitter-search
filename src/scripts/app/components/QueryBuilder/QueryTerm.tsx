@@ -20,6 +20,8 @@ export const translate = {
 }
 
 export interface QueryCondition {
+  id: number
+  focus: boolean
   keywords: string[]
   operator: Operator
 }
