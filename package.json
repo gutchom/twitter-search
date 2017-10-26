@@ -17,10 +17,10 @@
     "npm": "^5.*"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=development run-p -s server:** 'build:** -- -w'",
+    "start": "cross-env NODE_ENV=development run-p -s count server:** 'build:** -- -w'",
     "test": "cross-env NODE_ENV=test karma start",
     "testing": "npm t -- --auto-watch --no-single-run",
-    "build": "cross-env NODE_ENV=production run-s lint:** test clean build:**",
+    "build": "cross-env NODE_ENV=production run-s lint:** test clean build:** count",
     "build:image": "cpx ./src/images/**/* ./public/img",
     "build:style": "postcss ./src/styles/pages/**/*.css -b ./src/styles/pages -d ./public/css",
     "build:script": "webpack --progress",
@@ -29,8 +29,8 @@
     "lint:script": "tslint -p tsconfig.json --fix ./src/**/*.ts*",
     "server:mock": "cross-env PORT=${OBSERVE_2CH_PORT-3000} nodemon -w ./server ./server",
     "server:sync": "browser-sync start -b 'google chrome' -f ./public -p localhost:${OBSERVE_2CH_PORT-3000} --port ${OBSERVE_2CH_SYNC-3333}",
-    "postclean": "mkdirp ./public/js ./public/css ./public/img",
-    "clean": "rimraf ./public"
+    "clean": "rimraf ./public && mkdirp ./public/js ./public/css ./public/img",
+    "count": "TOTAL=$(find ./src -name '*.ts*' -o -name '*.css' | xargs wc -l | tail -1); printf '\\e[36m\n  This project has\\e[35m %s lines\\e[36m of source code!\n\n\\e[m' ${TOTAL%total}"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^17.1.1",
