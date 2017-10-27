@@ -18,6 +18,7 @@
   padding: 16px 6px 0;
   position: relative;
   text-align: center;
+  transition: var(--duration-slow) var(--easing-in-out-back);
 
   &::before {
     align-items: center;

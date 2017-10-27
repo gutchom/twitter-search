@@ -36,7 +36,7 @@
     right: var(--modal-padding);
     top: var(--modal-padding);
     transform: scale(0);
-    transition: var(--duration);
+    transition: var(--duration-slow) var(--easing-in-out-back);
   }
 
   & .modal--close {

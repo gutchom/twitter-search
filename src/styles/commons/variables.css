@@ -19,6 +19,7 @@
   --duration-quick: calc(var(--duration) * 0.5);
   --duration-middle: calc(var(--duration) * 1);
   --duration-slow: calc(var(--duration) * 2);
+  --easing-in-out-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 @custom-media --screen-mobile (width <= 480px);

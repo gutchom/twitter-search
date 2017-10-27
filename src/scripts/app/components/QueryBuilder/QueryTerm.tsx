@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, TransitionEvent } from 'react'
 import SelectableInput from 'app/components/SelectableInput'
 import classes from 'app/lib/classNames'
 
@@ -37,12 +37,14 @@ export interface QueryTermProps {
 
 export interface QueryTermState extends QueryCondition {
   confirming: boolean
+  style: { transform?: string }
 }
 
 export default class QueryTerm extends React.Component<QueryTermProps, QueryTermState> {
   state = {
     ...this.props.defaults,
     confirming: false,
+    style: {},
   }
 
   handleKeywordChange = (keywords: string[]) => {
@@ -57,7 +59,7 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
 
   handleRemove = () => {
     if (this.state.confirming) {
-      this.props.onRemove(this.props.position)
+      this.setState({ style: { transform: 'scale(0)' } })
     } else {
       this.setState({ confirming: true })
     }
@@ -67,9 +69,15 @@ export default class QueryTerm extends React.Component<QueryTermProps, QueryTerm
     this.setState({ confirming: false })
   }
 
+  handleTransitionEnd = (e: TransitionEvent<HTMLLIElement>) => {
+    if (e.propertyName === 'transform') {
+      this.props.onRemove(this.props.position)
+    }
+  }
+
   render() {
     return (
-      <li className="query--term">
+      <li className="query--term" style={this.state.style} onTransitionEnd={this.handleTransitionEnd}>
         <div
           className={classes('query--confirm-deletion', { visible: this.state.confirming })}
           tabIndex={0}
