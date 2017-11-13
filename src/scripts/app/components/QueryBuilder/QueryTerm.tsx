@@ -1,6 +1,6 @@
 import React, { ChangeEvent, TransitionEvent } from 'react'
 import SelectableInput from 'app/components/SelectableInput'
-import classes from 'app/lib/classNames'
+import classes from 'app/lib/classname'
 
 export type Operator = 'AND' | 'OR' | 'NOT'
 
@@ -9,12 +9,12 @@ export const operators: Operator[] = ['AND', 'OR', 'NOT']
 export const translate = {
   sign: {
     AND: '&',
-    OR: '?',
+    OR : '?',
     NOT: '-',
   },
   ja: {
     AND: 'を全て含む',
-    OR: 'のどれかを含む',
+    OR : 'のどれかを含む',
     NOT: 'を全て含まない',
   },
 }

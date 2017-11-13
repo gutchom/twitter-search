@@ -89,7 +89,7 @@ export default class Modal extends React.Component<ModalProps, {}> {
         <div className="modal--window">
           {this.props.header && <header>{this.props.header}</header>}
           {this.props.footer && <footer>{this.props.footer}</footer>}
-          <button className="modal--close" onClick={this.handleCloseClick}>
+          <button className="modal--close" onClick={this.handleCloseClick} tabIndex={-1}>
             <i className="fa fa-times" aria-hidden="true" />
           </button>
           <div className="modal--content" ref={this.contentRef}>

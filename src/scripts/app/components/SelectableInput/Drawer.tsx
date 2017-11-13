@@ -1,6 +1,6 @@
 import React from 'react'
 import Option from './Option'
-import classes from 'app/lib/classNames'
+import classes from 'app/lib/classname'
 
 export interface DrawerProps {
   visible: boolean

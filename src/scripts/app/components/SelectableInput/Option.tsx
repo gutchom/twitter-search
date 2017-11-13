@@ -1,5 +1,5 @@
 import React from 'react'
-import classes from 'app/lib/classNames'
+import classes from 'app/lib/classname'
 
 export interface OptionProps {
   text: string
@@ -21,7 +21,7 @@ const Option: React.SFC<OptionProps> = props => (
       />
       <div className={classes('query-input--option--container', { focus: props.focusing })}>
         {props.text}
-        </div>
+      </div>
     </label>
   </li>
 )

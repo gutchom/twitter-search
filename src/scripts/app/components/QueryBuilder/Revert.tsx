@@ -3,7 +3,7 @@ import Modal from 'app/components/Modal'
 import Logger from 'app/stores/Logger'
 import RevertItem from './RevertItem'
 import equal from 'app/lib/equal'
-import classes from 'app/lib/classNames'
+import classes from 'app/lib/classname'
 import { QueryCondition } from './QueryTerm'
 
 type Position = number[]
@@ -82,19 +82,17 @@ export default class Revert extends React.Component<HistoryProps, HistoryState> 
         visible={this.props.visible}
         onClose={this.props.onCancel}
         header={<h1><i className="fa fa-clock-o"/>履歴</h1>}
-        footer={(
-          <div>
-            <button className={classes({ enable: this.logger.canUndo })} onClick={this.handleUndo}>
-              <i className="fa fa-undo"/>
-            </button>
-            <button className={classes({ enable: this.logger.canRedo })} onClick={this.handleRedo}>
-              <i className="fa fa-repeat"/>
-            </button>
-            <button className={classes('submit', { enable: this.state.selected.length })} onClick={this.handleSubmit}>
-              決定
-            </button>
-          </div>
-        )}
+        footer={<div>
+          <button className={classes({ enable: this.logger.canUndo })} tabIndex={-1} onClick={this.handleUndo}>
+            <i className="fa fa-undo"/>
+          </button>
+          <button className={classes({ enable: this.logger.canRedo })} tabIndex={-1} onClick={this.handleRedo}>
+            <i className="fa fa-repeat"/>
+          </button>
+          <button className={classes('submit', { enable: !!this.state.selected.length })} onClick={this.handleSubmit}>
+            決定
+          </button>
+        </div>}
       >
         <ul className="history">
           {this.props.history.map((query, index0) => (
