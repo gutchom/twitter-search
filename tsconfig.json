@@ -1,34 +1,38 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "target": "esnext",
+    "target": "es5",
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noEmit": true,
+    "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "removeComments": true,
-    "importHelpers": true,
-    "baseUrl": "./src/scripts",
-    "typeRoots" : [
-      "types",
-      "./node_modules/@types"
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "baseUrl": "./",
+    "typeRoots": [
+      "node_modules",
+      "types"
     ],
-    "paths": {
-      "*": ["*"],
-      "app": ["./src/scripts/app"]
-    }
   },
   "include": [
-    "./src/scripts/**/*"
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
   ],
   "exclude": [
-    "./node_modules"
-  ],
-  "compileOnSave": false,
-  "atom": {
-    "rewriteTsConfig": false
-  }
+    "node_modules"
+  ]
 }
